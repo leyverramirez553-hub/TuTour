@@ -1,0 +1,1338 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f97316">
+  <meta name="description" content="TuTour helps travelers discover Oaxaca places, maps, safety tips, and personalized itineraries.">
+  <title>TuTour</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="./styles/logo-fix.css">
+  <link rel="stylesheet" href="./styles/layout-improvements.css">
+  <link rel="stylesheet" href="./styles/home-tabs-compact.css">
+  <!-- GenMB Visual Edit START -->
+<style data-genmb-visual-edit>
+body > div:nth-of-type(1) > div:nth-of-type(1) > header:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(1) > img:nth-of-type(1) {
+  padding: 0.30px !important;
+}
+</style>
+<style data-genmb-visual-edit>
+body > div:nth-of-type(1) > div:nth-of-type(1) > header:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(1) > img:nth-of-type(1) {
+  padding: 0.30px !important;
+}
+</style>
+<!-- GenMB Visual Edit END -->
+    <!-- GenMB Capabilities START -->
+    <script>
+// GenMB auth SDK (Capability)
+(function() {
+/**
+ * GenMB Auth SDK
+ * Provides Google Sign-In, Email Magic Link, and Email + Password
+ * authentication for GenMB-generated apps.
+ *
+ * This SDK is auto-injected and initialized. Use window.genmb.auth:
+ *   window.genmb.auth.ready()          // Wait for session check (async). Auto-verifies magic link tokens from URL.
+ *   window.genmb.auth.signIn()         // Open Google sign-in popup (auto-falls back to redirect)
+ *   window.genmb.auth.sendMagicLink(email) // Send a sign-in link to the email. Returns Promise.
+ *   window.genmb.auth.signUp(email, password, name?)        // Request OTP-verified signup. Returns Promise.
+ *   window.genmb.auth.verifySignUp(email, code)             // Consume OTP, create account, sign in. Returns Promise<User|null>.
+ *   window.genmb.auth.signInWithPassword(email, password)   // Direct password sign-in. Returns Promise<User|null>.
+ *   window.genmb.auth.requestPasswordReset(email)           // Send password-reset OTP. Returns Promise.
+ *   window.genmb.auth.confirmPasswordReset(email, code, newPassword) // Apply new password. Returns Promise.
+ *   window.genmb.auth.signOut()        // Sign out user
+ *   window.genmb.auth.getUser()        // Get current user or null
+ *   window.genmb.auth.isAuthenticated() // Check if signed in
+ *   window.genmb.auth.onAuthStateChange(callback) // Subscribe to changes
+ *
+ * User object: { id, email, name, picture }
+ *
+ * Error codes (error.code):
+ *   SIGN_IN_TIMEOUT - Popup sign-in timed out after 120s
+ *   SIGN_IN_FAILED  - Sign-in was rejected or returned an error
+ *   VERIFY_FAILED   - Magic link verification failed (expired or already used)
+ *   SIGNUP_FAILED   - Password signup failed (rate-limited, invalid password, OTP mismatch)
+ *   LOGIN_FAILED    - Password login failed (bad credentials or rate-limited)
+ *   RESET_FAILED    - Password reset failed (bad OTP or invalid password)
+ *   NETWORK_ERROR   - Network request failed
+ */
+
+class GenMBGoogleAuth {
+  constructor({ appId, baseUrl, onError }) {
+    if (!appId) {
+      throw new Error('GenMBGoogleAuth: appId is required')
+    }
+
+    this.appId = appId
+    this.baseUrl = (baseUrl || '/api/auth/google').replace(/\/$/, '')
+    this.user = null
+    this.listeners = []
+    this.onError = onError || console.error
+    this._ready = false
+    this._readyPromise = null
+    this._refreshTimer = null
+  }
+
+  /**
+   * Wait for SDK to be ready (session checked).
+   * Auto-verifies magic link tokens if ?magic_token=xxx is in the URL.
+   */
+  async ready() {
+    if (this._ready) return this
+    if (this._readyPromise) return this._readyPromise
+
+    var self = this
+    this._readyPromise = this.checkSession().then(function () {
+      // Auto-verify magic link token if present in URL and no existing session
+      if (!self.user) {
+        var params = new URLSearchParams(window.location.search)
+        var magicToken = params.get('magic_token')
+        if (magicToken) {
+          return self.verifyMagicLink(magicToken).catch(function () {
+            // Swallow error - cleanup happens below
+          }).then(function () {
+            // Clean up URL regardless of verification result
+            params.delete('magic_token')
+            var cleanUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '') + window.location.hash
+            window.history.replaceState({}, '', cleanUrl)
+          })
+        }
+      }
+    }).then(function () {
+      self._ready = true
+      return self
+    })
+    return this._readyPromise
+  }
+
+  /**
+   * Sign in with Google. Tries popup first, auto-falls back to redirect if blocked.
+   */
+  async signIn() {
+    return new Promise((resolve, reject) => {
+      let settled = false
+
+      var width = 500
+      var height = 600
+      var left = window.screenX + (window.outerWidth - width) / 2
+      var top = window.screenY + (window.outerHeight - height) / 2
+
+      // Relative path by default (deployed apps - keeps the bundle host-agnostic).
+      // EXCEPTION: in the GenMB editor preview the app runs on an ephemeral sandbox
+      // host (preview-<port>-<token>.genmb.com) that can't carry the OAuth popup
+      // navigation, so point the popup at the canonical platform origin (derived as
+      // the registrable parent of the sandbox host, not a hardcoded literal) and
+      // tell the callback where to post the result back via &origin=.
+      var navBase = this.baseUrl
+      var extraOrigin = ''
+      var host = window.location.hostname || ''
+      if (/^preview-\d+-/.test(host) && host.slice(-10) === '.genmb.com') {
+        navBase = 'https://' + host.split('.').slice(-2).join('.') + '/api/auth/google'
+        extraOrigin = '&origin=' + encodeURIComponent(window.location.origin)
+      }
+
+      var popup = window.open(
+        navBase + '/authorize?app_id=' + encodeURIComponent(this.appId) + '&redirect=popup' + extraOrigin,
+        'genmb-google-signin',
+        'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',popup=1'
+      )
+
+      if (!popup || popup.closed) {
+        // Popup blocked - fall back to full-page redirect
+        window.location.href = navBase + '/authorize?app_id=' + encodeURIComponent(this.appId) + '&redirect=' + encodeURIComponent(window.location.href) + extraOrigin
+        // Resolve with null since page will navigate away
+        resolve(null)
+        return
+      }
+
+      var cleanup = function () {
+        clearTimeout(timeout)
+        clearInterval(checkClosed)
+        window.removeEventListener('message', handleMessage)
+      }
+
+      var self = this
+
+      var timeout = setTimeout(function () {
+        if (settled) return
+        settled = true
+        cleanup()
+        popup.close()
+        var error = new Error("Sign-in took too long. Please try again.")
+        error.code = 'SIGN_IN_TIMEOUT'
+        self.onError(error)
+        reject(error)
+      }, 120000)
+
+      var handleMessage = function (event) {
+        var origin = event.origin
+        var isGenmb = origin === 'https://genmb.com' || origin.endsWith('.genmb.com')
+        var isLocalhost = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')
+        if (!isGenmb && !isLocalhost) return
+
+        if (settled) return
+        settled = true
+        cleanup()
+
+        if (event.data && event.data.error) {
+          var error = new Error(event.data.error)
+          error.code = 'SIGN_IN_FAILED'
+          self.onError(error)
+          reject(error)
+        } else if (event.data && event.data.user) {
+          self.user = event.data.user
+          self._notifyListeners()
+          self._startRefreshTimer()
+          resolve(self.user)
+        }
+      }
+
+      var checkClosed = setInterval(function () {
+        if (popup.closed && !settled) {
+          settled = true
+          cleanup()
+          resolve(null)
+        }
+      }, 500)
+
+      window.addEventListener('message', handleMessage)
+    })
+  }
+
+  /**
+   * Send a magic link sign-in email.
+   * Always resolves (returns success even if email doesn't exist, to prevent enumeration).
+   * @param {string} email - User's email address
+   * @returns {Promise<{success: boolean, data?: object}>}
+   */
+  async sendMagicLink(email) {
+    try {
+      var res = await fetch('/api/auth/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, app_id: this.appId }),
+        credentials: 'include'
+      })
+      return await res.json()
+    } catch (err) {
+      var error = new Error("We couldn't send the sign-in link. Check your connection and try again.")
+      error.code = 'NETWORK_ERROR'
+      this.onError(error)
+      throw error
+    }
+  }
+
+  /**
+   * Verify a magic link token. Called automatically by ready() if URL contains ?magic_token=xxx.
+   * Can also be called manually.
+   * @param {string} token - The magic link token
+   * @returns {Promise<User|null>}
+   */
+  async verifyMagicLink(token) {
+    try {
+      var res = await fetch(
+        '/api/auth/email/verify?token=' + encodeURIComponent(token) + '&app_id=' + encodeURIComponent(this.appId),
+        { credentials: 'include' }
+      )
+      if (!res.ok) {
+        var error = new Error("This sign-in link has expired or already been used. Send yourself a new one.")
+        error.code = 'VERIFY_FAILED'
+        this.onError(error)
+        return null
+      }
+      var data = await res.json()
+      if (data.success && data.user) {
+        this.user = data.user
+        this._notifyListeners()
+        this._startRefreshTimer()
+      }
+      return this.user
+    } catch (err) {
+      var error = new Error("We couldn't sign you in. Check your connection and try again.")
+      error.code = 'NETWORK_ERROR'
+      this.onError(error)
+      return null
+    }
+  }
+
+  /**
+   * Sign up a new end-user with email + password (OTP-verified).
+   * Calls signUp -> show "check your email" UI -> verifySignUp.
+   */
+  async signUp(email, password, name) {
+    try {
+      var res = await fetch('/api/auth/password/signup-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password, name: name || null, app_id: this.appId }),
+        credentials: 'include',
+      })
+      var data = await res.json()
+      if (!data.success) {
+        var err = new Error(data.error || 'Sign-up failed')
+        err.code = 'SIGNUP_FAILED'
+        this.onError(err)
+        throw err
+      }
+      return data
+    } catch (err) {
+      if (err && err.code) throw err
+      var nerr = new Error("We couldn't reach the server. Check your connection and try again.")
+      nerr.code = 'NETWORK_ERROR'
+      this.onError(nerr)
+      throw nerr
+    }
+  }
+
+  /**
+   * Verify the OTP from signUp(), create the account, and sign in.
+   * Returns the User object on success, null on cookie failure.
+   */
+  async verifySignUp(email, code) {
+    try {
+      var res = await fetch('/api/auth/password/signup-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, code: code, app_id: this.appId }),
+        credentials: 'include',
+      })
+      var data = await res.json()
+      if (!data.success || !data.user) {
+        var err = new Error(data.error || 'Verification failed')
+        err.code = 'SIGNUP_FAILED'
+        this.onError(err)
+        throw err
+      }
+      this.user = data.user
+      this._notifyListeners()
+      this._startRefreshTimer()
+      return this.user
+    } catch (err) {
+      if (err && err.code) throw err
+      var nerr = new Error("We couldn't reach the server. Check your connection and try again.")
+      nerr.code = 'NETWORK_ERROR'
+      this.onError(nerr)
+      throw nerr
+    }
+  }
+
+  /**
+   * Sign in an existing user with email + password.
+   * Returns the User object on success, throws on failure.
+   */
+  async signInWithPassword(email, password) {
+    try {
+      var res = await fetch('/api/auth/password/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password, app_id: this.appId }),
+        credentials: 'include',
+      })
+      var data = await res.json()
+      if (!data.success || !data.user) {
+        var err = new Error(data.error || 'Invalid email or password')
+        err.code = 'LOGIN_FAILED'
+        this.onError(err)
+        throw err
+      }
+      this.user = data.user
+      this._notifyListeners()
+      this._startRefreshTimer()
+      return this.user
+    } catch (err) {
+      if (err && err.code) throw err
+      var nerr = new Error("We couldn't reach the server. Check your connection and try again.")
+      nerr.code = 'NETWORK_ERROR'
+      this.onError(nerr)
+      throw nerr
+    }
+  }
+
+  /**
+   * Send a password-reset OTP to the email. Always resolves (generic 200).
+   */
+  async requestPasswordReset(email) {
+    try {
+      var res = await fetch('/api/auth/password/reset-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, app_id: this.appId }),
+        credentials: 'include',
+      })
+      return await res.json()
+    } catch (err) {
+      var nerr = new Error("We couldn't reach the server. Check your connection and try again.")
+      nerr.code = 'NETWORK_ERROR'
+      this.onError(nerr)
+      throw nerr
+    }
+  }
+
+  /**
+   * Confirm a password reset with OTP + new password.
+   */
+  async confirmPasswordReset(email, code, newPassword) {
+    try {
+      var res = await fetch('/api/auth/password/reset-confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, code: code, newPassword: newPassword, app_id: this.appId }),
+        credentials: 'include',
+      })
+      var data = await res.json()
+      if (!data.success) {
+        var err = new Error(data.error || 'Password reset failed')
+        err.code = 'RESET_FAILED'
+        this.onError(err)
+        throw err
+      }
+      return data
+    } catch (err) {
+      if (err && err.code) throw err
+      var nerr = new Error("We couldn't reach the server. Check your connection and try again.")
+      nerr.code = 'NETWORK_ERROR'
+      this.onError(nerr)
+      throw nerr
+    }
+  }
+
+  /**
+   * Sign out the current user.
+   */
+  async signOut() {
+    this._stopRefreshTimer()
+
+    try {
+      await fetch(this.baseUrl + '/signout?app_id=' + encodeURIComponent(this.appId), {
+        method: 'POST',
+        credentials: 'include'
+      })
+    } catch (err) {
+      err.code = 'NETWORK_ERROR'
+      this.onError(err)
+    }
+
+    this.user = null
+    this._notifyListeners()
+  }
+
+  /**
+   * Check if user has an active session. Also refreshes the session expiry.
+   */
+  async checkSession() {
+    try {
+      var res = await fetch(this.baseUrl + '/session?app_id=' + encodeURIComponent(this.appId), {
+        credentials: 'include'
+      })
+
+      if (res.ok) {
+        this.user = await res.json()
+        this._notifyListeners()
+        this._startRefreshTimer()
+        // Refresh session expiry in the background
+        this._refreshSession()
+        return this.user
+      }
+      this._stopRefreshTimer()
+      return null
+    } catch (err) {
+      err.code = 'NETWORK_ERROR'
+      this.onError(err)
+      return null
+    }
+  }
+
+  /**
+   * Get the current user.
+   */
+  getUser() {
+    return this.user
+  }
+
+  /**
+   * Check if user is authenticated.
+   */
+  isAuthenticated() {
+    return this.user !== null
+  }
+
+  /**
+   * Subscribe to auth state changes.
+   */
+  onAuthStateChange(callback) {
+    this.listeners.push(callback)
+    callback(this.user)
+    var self = this
+    return function () {
+      self.listeners = self.listeners.filter(function (l) { return l !== callback })
+    }
+  }
+
+  /**
+   * Refresh the session to extend its expiry (fire-and-forget).
+   */
+  _refreshSession() {
+    fetch(this.baseUrl + '/refresh?app_id=' + encodeURIComponent(this.appId), {
+      method: 'POST',
+      credentials: 'include'
+    }).catch(function () {
+      // Silent - refresh is best-effort
+    })
+  }
+
+  /**
+   * Start periodic session refresh (every 30 minutes).
+   */
+  _startRefreshTimer() {
+    this._stopRefreshTimer()
+    var self = this
+    this._refreshTimer = setInterval(function () {
+      if (self.user) {
+        self._refreshSession()
+      }
+    }, 30 * 60 * 1000) // 30 minutes
+  }
+
+  /**
+   * Stop periodic session refresh.
+   */
+  _stopRefreshTimer() {
+    if (this._refreshTimer) {
+      clearInterval(this._refreshTimer)
+      this._refreshTimer = null
+    }
+  }
+
+  _notifyListeners() {
+    var self = this
+    this.listeners.forEach(function (listener) {
+      try {
+        listener(self.user)
+      } catch (err) {
+        console.error('Error in auth state listener:', err)
+      }
+    })
+  }
+}
+
+// Export for ES modules (when loaded via import)
+if (typeof window !== 'undefined') {
+  window.GenMBGoogleAuth = GenMBGoogleAuth;
+}
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR",
+  "baseUrl": "/api/auth/google"
+};
+window.genmb.auth = new GenMBGoogleAuth(config);
+window.genmb.auth.ready();
+})();
+</script>
+    <script>
+// GenMB ai-chatbot SDK (Capability)
+(function() {
+/**
+ * GenMB AI Chatbot SDK (Connector)
+ * Send messages to GenMB's AI proxy. Build your own chat UI.
+ *
+ * Available at window.genmb.chatbot:
+ *   window.genmb.chatbot.send(message, options?)  // Send message, get AI response text (string)
+ *   window.genmb.chatbot.setSystemPrompt(prompt)   // Set default system prompt
+ */
+
+class GenMBAIChatbot {
+  constructor(config) {
+    if (!config.appId) {
+      throw new Error('GenMBAIChatbot: appId is required')
+    }
+    this.appId = config.appId
+    this.baseUrl = (config.baseUrl || '').replace(/\/$/, '')
+    this.systemPrompt = 'You are a friendly and helpful AI assistant. Be concise and helpful.'
+  }
+
+  /**
+   * Send a message and get an AI response.
+   * @param {string} message - The user's message
+   * @param {Object} [options]
+   * @param {string} [options.systemPrompt] - Override system prompt for this call
+   * @param {Array<{role: string, content: string}>} [options.history] - Conversation history (last N messages)
+   * @param {number} [options.maxTokens=500] - Max tokens in response
+   * @returns {Promise<string>} The AI response text
+   */
+  async send(message, options = {}) {
+    if (!message || typeof message !== 'string') {
+      throw new Error('Message is required')
+    }
+
+    let sysPrompt = options.systemPrompt || this.systemPrompt
+    const history = options.history || []
+    const maxTokens = options.maxTokens || 500
+
+    let historyEntries = history
+      .slice(-10)
+      .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
+
+    const assemble = (sys, entries) => {
+      const histText = entries.join('\n')
+      return histText
+        ? `${sys}\n\nConversation:\n${histText}\nUser: ${message}\n\nRespond to the user's latest message concisely and helpfully.`
+        : `${sys}\n\nUser: ${message}\n\nRespond concisely and helpfully.`
+    }
+
+    // The AI proxy rejects prompts over 16000 chars (must match
+    // AI_PROXY_MAX_PROMPT_LENGTH in api/config/constants.py). Rather than failing
+    // the whole request (which generated chat UIs surface to non-technical owners
+    // as an opaque "could not reply" when their system prompt packs in lots of
+    // context), degrade gracefully: always keep the user's latest message +
+    // trailing instruction, trim the oldest history first, then truncate the
+    // system-prompt tail, and send what fits.
+    const MAX_PROMPT_CHARS = 16000
+    let prompt = assemble(sysPrompt, historyEntries)
+    if (prompt.length > MAX_PROMPT_CHARS) {
+      while (prompt.length > MAX_PROMPT_CHARS && historyEntries.length > 0) {
+        historyEntries = historyEntries.slice(1)
+        prompt = assemble(sysPrompt, historyEntries)
+      }
+      if (prompt.length > MAX_PROMPT_CHARS) {
+        const overflow = prompt.length - MAX_PROMPT_CHARS
+        sysPrompt = sysPrompt.length > overflow ? sysPrompt.slice(0, sysPrompt.length - overflow - 1) : ''
+        prompt = assemble(sysPrompt, historyEntries)
+        // Last resort (e.g. a single enormous user message): hard clamp.
+        if (prompt.length > MAX_PROMPT_CHARS) prompt = prompt.slice(0, MAX_PROMPT_CHARS)
+      }
+      try { console.warn(`[genmb.chatbot] prompt exceeded ${MAX_PROMPT_CHARS} chars; trimmed context to fit.`) } catch (e) {}
+    }
+
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 60000)
+
+    let res
+    try {
+      res = await fetch(`${this.baseUrl}/api/ai/completion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, appId: this.appId, maxTokens }),
+        signal: controller.signal
+      })
+    } catch (err) {
+      clearTimeout(timer)
+      if (err.name === 'AbortError') throw new Error('Request timed out')
+      throw err
+    }
+    clearTimeout(timer)
+
+    if (!res.ok) {
+      if (res.status === 429) throw new Error('Rate limit exceeded (100 requests/hour)')
+      throw new Error('Request failed')
+    }
+
+    const json = await res.json()
+    return json.data?.text || ''
+  }
+
+  /**
+   * Set the default system prompt for all send() calls.
+   * @param {string} prompt
+   */
+  setSystemPrompt(prompt) {
+    if (typeof prompt === 'string' && prompt.trim()) {
+      this.systemPrompt = prompt.trim()
+    }
+  }
+
+  // Backward-compat stubs (old widget API — no-op)
+  open() {}
+  close() {}
+  toggle() {}
+  setTheme() {}
+}
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR"
+};
+window.genmb.chatbot = new GenMBAIChatbot(config);
+})();
+</script>
+    <script>
+// GenMB kv SDK (Capability)
+(function() {
+/**
+ * GenMB Key-Value Store SDK
+ * Zero-config key-value persistence for generated apps. No schema, no setup.
+ * Auto-injected at window.genmb.kv.
+ *
+ * Usage: window.genmb.kv.method()
+ *   .get(key)            — Read a value (resolves to null if the key is absent)
+ *   .set(key, value)     — Write/overwrite a value (any JSON-serializable value)
+ *   .delete(key)         — Remove a key (resolves to true if a key was removed)
+ *   .list(prefix?)       — List entries, optionally filtered by key prefix.
+ *                          Resolves to { data: [{ key, value }], total, limit, offset };
+ *                          the entries are in `result.data`.
+ *   .increment(key, by?) — Atomically add `by` (default 1) to a numeric value.
+ *                          Resolves to the new value.
+ *
+ * Keys are scoped to this app. Values are limited in size; oversized writes
+ * surface a friendly error rather than raw backend grammar.
+ */
+
+// Map any error string (raw or backend-friendly) to ONE plain sentence safe to
+// show a non-technical end user. The backend already returns friendly text, but
+// this is the last-mile guard for older deployments / unmapped cases so raw
+// Postgres grammar never reaches the UI.
+function _friendlyMsg(s) {
+  if (!s) return 'Something went wrong. Please try again.'
+  var t = String(s)
+  if (/too large|exceeds|payload too|value too/i.test(t)) return 'That is too big to save. Please use a smaller value.'
+  if (/too many|quota|limit reached|max keys/i.test(t)) return 'This app has reached its storage limit.'
+  if (/being set up|setting up/i.test(t)) return 'Setting things up. Please try again in a moment.'
+  if (/not a number|not numeric|cannot increment/i.test(t)) return "That value can't be counted. Please reset it first."
+  return t
+}
+
+class GenMBKeyValueStore {
+  constructor(config) {
+    if (!config.appId) {
+      throw new Error('GenMBKeyValueStore: appId is required')
+    }
+    this._base = (config.baseUrl || '/api/kv') + '/' + config.appId
+  }
+
+  get(key) {
+    // Read a single value. A missing key is a normal outcome, not an error:
+    // resolve to null so callers can `??` a default without try/catch.
+    // The router wraps the value in { value } (APIResponse envelope); unwrap so
+    // callers get the bare stored value the docstring/promptTemplate promise.
+    return this._request('GET', this._base + '/' + encodeURIComponent(key), null, true).then(function (d) {
+      return d == null ? null : d.value
+    })
+  }
+
+  set(key, value) {
+    return this._request('POST', this._base, { key: key, value: value })
+  }
+
+  delete(key) {
+    return this._request('DELETE', this._base + '/' + encodeURIComponent(key))
+  }
+
+  list(prefix) {
+    var qs = ''
+    var parts = []
+    if (prefix) parts.push('prefix=' + encodeURIComponent(prefix))
+    parts.push('limit=1000')
+    qs = '?' + parts.join('&')
+    return this._request('GET', this._base + qs)
+  }
+
+  increment(key, by) {
+    if (by === undefined) by = 1
+    // The router wraps the new count in { key, value }; unwrap to the bare
+    // number so callers get the new value the docstring/promptTemplate promise.
+    return this._request('POST', this._base + '/' + encodeURIComponent(key) + '/increment', { by: by }).then(function (d) {
+      return d.value
+    })
+  }
+
+  // NOTE: methods call this bound (this._request(...)), so it may reference
+  // `this`-free behavior via the captured args. Retry is a loop, not recursion.
+  // `nullOn404` lets get() treat an absent key as a resolved null rather than a
+  // throw, while every other method still surfaces a 404 as an error.
+  async _request(method, url, body, nullOn404) {
+    var attempt = 0
+    var provisionAttempt = 0
+    while (true) {
+      var controller = new AbortController()
+      var timer = setTimeout(function () { controller.abort() }, 30000)
+      try {
+        var options = {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal
+        }
+        if (body) {
+          options.body = JSON.stringify(body)
+        }
+        var res = await fetch(url, options)
+        clearTimeout(timer)
+        if (!res.ok) {
+          if (res.status === 404 && nullOn404) {
+            return null
+          }
+          // Retry transient server failures (5xx) with backoff. NEVER retry
+          // 4xx - a validation/size error never succeeds on replay.
+          if (res.status >= 500 && attempt < 2) {
+            attempt++
+            await new Promise(function (r) { setTimeout(r, 300 * attempt) })
+            continue
+          }
+          var errBody = null
+          try { errBody = await res.json() } catch (_) {}
+          // Deployed apps proxy raised backend exceptions through verbatim, so
+          // the message lands in `detail` (FastAPI default), not `error` (only
+          // the preview proxy maps detail->error). Read both or the friendly
+          // messages below never see the real text in prod.
+          var raw = (errBody && (errBody.error || errBody.detail)) || ('Request failed (HTTP ' + res.status + ')')
+          // Right after an app is generated the shared store may still be warming
+          // up. The backend returns "Setting things up"; wait and retry
+          // transparently so a non-technical user's first calls just work.
+          if (/being set up|setting up/i.test(raw) && provisionAttempt < 6) {
+            provisionAttempt++
+            await new Promise(function (r) { setTimeout(r, Math.min(3000, 800 * provisionAttempt)) })
+            continue
+          }
+          throw new Error(_friendlyMsg(raw))
+        }
+        var result = await res.json()
+        if (!result.success) {
+          throw new Error(_friendlyMsg(result.error))
+        }
+        return result.data
+      } catch (err) {
+        clearTimeout(timer)
+        if (err.name === 'AbortError') {
+          // Timeout - likely a cold connection. Retry with backoff.
+          if (attempt < 2) {
+            attempt++
+            await new Promise(function (r) { setTimeout(r, 300 * attempt) })
+            continue
+          }
+          throw new Error('The store took too long to respond. Please try again.')
+        }
+        throw err
+      }
+    }
+  }
+}
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR",
+  "baseUrl": "/api/kv"
+};
+window.genmb.kv = new GenMBKeyValueStore(config);
+})();
+</script>
+    <script>
+// GenMB contact-form SDK (Capability)
+(function() {
+/**
+ * GenMB Contact Form SDK (Connector)
+ * Submit contact form messages that get emailed to the app owner.
+ * Build your own contact form UI.
+ *
+ * Available at window.genmb.contactForm:
+ *   window.genmb.contactForm.submit({ name, email, subject?, message })
+ */
+
+class GenMBContactForm {
+  constructor(config) {
+    if (!config.appId) {
+      throw new Error('GenMBContactForm: appId is required')
+    }
+    this.appId = config.appId
+    this.baseUrl = (config.baseUrl || '').replace(/\/$/, '')
+  }
+
+  /**
+   * Submit a contact form message. Emails are sent to the app owner.
+   * @param {Object} data
+   * @param {string} data.name - Sender name (1-200 chars, required)
+   * @param {string} data.email - Sender email (valid email, required)
+   * @param {string} [data.subject] - Subject line (0-500 chars, optional)
+   * @param {string} data.message - Message body (1-5000 chars, required)
+   * @returns {Promise<{ success: boolean }>}
+   */
+  async submit(data) {
+    if (!data || !data.name || !data.email || !data.message) {
+      throw new Error('Missing required fields: name, email, message')
+    }
+
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(data.email)) {
+      throw new Error('Invalid email address')
+    }
+
+    var controller = new AbortController()
+    var timer = setTimeout(function () { controller.abort() }, 30000)
+
+    var res
+    try {
+      res = await fetch(this.baseUrl + '/api/contact/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          appId: this.appId,
+          name: data.name.trim(),
+          email: data.email.trim(),
+          subject: (data.subject || '').trim(),
+          message: data.message.trim()
+        }),
+        signal: controller.signal
+      })
+    } catch (err) {
+      clearTimeout(timer)
+      if (err.name === 'AbortError') throw new Error('Request timed out')
+      throw err
+    }
+    clearTimeout(timer)
+
+    var json = await res.json()
+
+    if (!res.ok || !json.success) {
+      throw new Error(json.error || 'Failed to submit contact form')
+    }
+
+    return { success: true }
+  }
+
+  // Backward-compat stubs (old widget API — no-op)
+  open() {}
+  close() {}
+  toggle() {}
+  setTheme() {}
+}
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR"
+};
+window.genmb.contactForm = new GenMBContactForm(config);
+})();
+</script>
+    <script>
+// GenMB relational-db SDK (Capability)
+(function() {
+/**
+ * GenMB Data Client SDK
+ * Relational database CRUD client for generated apps.
+ * Auto-injected at window.genmb.db.
+ *
+ * Usage: window.genmb.db.tableName.method()
+ *   .list(params?)      — List records (filtering, sorting, pagination)
+ *   .getById(id)        — Get single record
+ *   .create(fields)     — Insert new record
+ *   .update(id, fields) — Update record
+ *   .delete(id)         — Remove record
+ *   .count(params?)     — Count records (no data fetched)
+ *   .createMany(records) — Bulk insert (max 100)
+ *   .deleteMany(ids)    — Bulk delete (max 100)
+ *   .subscribe(cb)      — Live changes: cb({type,table,id,record}) on each
+ *                         create/update/delete. Returns an unsubscribe fn.
+ *                         Delivered across server instances, but at-most-once
+ *                         (no replay): refetch on reconnect for guaranteed state.
+ */
+
+// Map any error string (raw or backend-friendly) to ONE plain sentence safe to
+// show a non-technical end user. The backend already returns friendly text, but
+// this is the last-mile guard for older deployments / unmapped cases so raw
+// Postgres grammar never reaches the UI.
+function _friendlyMsg(s) {
+  if (!s) return 'Something went wrong. Please try again.'
+  var t = String(s)
+  if (/not-null|null value in column|required field was missing/i.test(t)) return 'Please fill in all required fields.'
+  if (/does not exist|undefined column|unknown field|doesn't exist yet/i.test(t)) return 'Something needs updating in this app. Please try again later.'
+  if (/being set up|setting up/i.test(t)) return 'Setting things up. Please try again in a moment.'
+  if (/not found in schema|no schema found|not provisioned/i.test(t)) return "This part of the app isn't ready yet. Please try again shortly."
+  if (/duplicate key|already exists|unique/i.test(t)) return 'That item already exists.'
+  if (/foreign key|linked record is missing/i.test(t)) return 'A linked item is missing.'
+  return t
+}
+
+class GenMBDataClient {
+  constructor(config) {
+    if (!config.appId) {
+      throw new Error('GenMBDataClient: appId is required')
+    }
+    this._base = '/api/data/' + config.appId
+    this._realtimeBase = '/api/realtime/' + config.appId
+
+    // Return a Proxy so property access creates table helpers dynamically
+    return new Proxy(this, {
+      get: function (target, prop) {
+        // Internal properties and methods pass through
+        if (prop in target || typeof prop === 'symbol' || prop === 'then') {
+          return target[prop]
+        }
+        return target._table(prop)
+      }
+    })
+  }
+
+  _table(name) {
+    var base = this._base
+    var request = this._request
+    var realtimeBase = this._realtimeBase
+
+    return {
+      list: function (params) {
+        var qs = ''
+        if (params) {
+          var parts = []
+          Object.keys(params).forEach(function (key) {
+            parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+          })
+          if (parts.length) qs = '?' + parts.join('&')
+        }
+        return request('GET', base + '/' + name + qs)
+      },
+      getById: function (id) {
+        return request('GET', base + '/' + name + '/' + id)
+      },
+      create: function (fields) {
+        return request('POST', base + '/' + name, { fields: fields })
+      },
+      update: function (id, fields) {
+        return request('PUT', base + '/' + name + '/' + id, { fields: fields })
+      },
+      delete: function (id) {
+        return request('DELETE', base + '/' + name + '/' + id)
+      },
+      count: function (params) {
+        var qs = ''
+        if (params) {
+          var parts = []
+          Object.keys(params).forEach(function (key) {
+            parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+          })
+          if (parts.length) qs = '?' + parts.join('&')
+        }
+        return request('GET', base + '/' + name + '/count' + qs)
+      },
+      createMany: function (records) {
+        return request('POST', base + '/' + name + '/bulk', { records: records })
+      },
+      deleteMany: function (ids) {
+        return request('POST', base + '/' + name + '/bulk-delete', { ids: ids })
+      },
+      // Subscribe to live create/update/delete events for this table. Prefers
+      // the shared realtime SDK (window.genmb.realtime) when present so reconnect
+      // + heartbeat are handled there; otherwise opens its own SSE stream to the
+      // same backend channel. Returns an unsubscribe function.
+      subscribe: function (callback) {
+        var channel = 'db:' + name
+        if (window.genmb && window.genmb.realtime &&
+            typeof window.genmb.realtime.subscribe === 'function') {
+          return window.genmb.realtime.subscribe(channel, callback)
+        }
+        var url = realtimeBase + '/subscribe?channel=' + encodeURIComponent(channel)
+        var source = new EventSource(url, { withCredentials: true })
+        source.onmessage = function (e) {
+          try { callback(JSON.parse(e.data)) } catch (_) { callback(e.data) }
+        }
+        return function () { source.close() }
+      }
+    }
+  }
+
+  // NOTE: callers invoke this UNBOUND (var request = this._request), so it must
+  // not reference `this`. Retry is a loop, not recursion, for the same reason.
+  async _request(method, url, body) {
+    var attempt = 0
+    var provisionAttempt = 0
+    while (true) {
+      var controller = new AbortController()
+      var timer = setTimeout(function () { controller.abort() }, 30000)
+      try {
+        var options = {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal
+        }
+        if (body) {
+          options.body = JSON.stringify(body)
+        }
+        var res = await fetch(url, options)
+        clearTimeout(timer)
+        if (!res.ok) {
+          // Retry transient server failures (5xx) with backoff. NEVER retry
+          // 4xx - a validation/constraint error never succeeds on replay.
+          if (res.status >= 500 && attempt < 2) {
+            attempt++
+            await new Promise(function (r) { setTimeout(r, 300 * attempt) })
+            continue
+          }
+          var errBody = null
+          try { errBody = await res.json() } catch (_) {}
+          // Deployed apps proxy raised backend exceptions through verbatim, so
+          // the message lands in `detail` (FastAPI default), not `error` (only
+          // the preview proxy maps detail->error). Read both or the provisioning
+          // retry + friendly messages below never see the real text in prod.
+          var raw = (errBody && (errBody.error || errBody.detail)) || ('Request failed (HTTP ' + res.status + ')')
+          // Right after an app is generated the DB may still be provisioning.
+          // The backend auto-re-triggers it and returns "Database is being set
+          // up" (api/routers/dataconnect.py _get_app_schema). Wait and retry
+          // transparently so a non-technical user's first calls just work
+          // instead of surfacing a scary error. Keyed on the message text - keep
+          // in sync with that string.
+          if (/being set up|setting up/i.test(raw) && provisionAttempt < 6) {
+            provisionAttempt++
+            await new Promise(function (r) { setTimeout(r, Math.min(3000, 800 * provisionAttempt)) })
+            continue
+          }
+          throw new Error(_friendlyMsg(raw))
+        }
+        var result = await res.json()
+        if (!result.success) {
+          throw new Error(_friendlyMsg(result.error))
+        }
+        return result.data
+      } catch (err) {
+        clearTimeout(timer)
+        if (err.name === 'AbortError') {
+          // Timeout - likely a cold connection. Retry with backoff.
+          if (attempt < 2) {
+            attempt++
+            await new Promise(function (r) { setTimeout(r, 300 * attempt) })
+            continue
+          }
+          throw new Error('The database took too long to respond. Please try again.')
+        }
+        throw err
+      }
+    }
+  }
+}
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR"
+};
+window.genmb.db = new GenMBDataClient(config);
+})();
+</script>
+    <script>
+// GenMB maps SDK (Capability)
+(function() {
+/** GenMB Maps SDK - render maps, geocoding, places, directions.
+ * render() mounts a real map. With a Google Maps key (resolved server-side
+ * via POST /render - per-app BYOK env var or the platform secret - or a
+ * client-configured `mapsApiKey`) it uses Google Maps. With no key it falls
+ * back to keyless Leaflet + OpenStreetMap, so a map always renders. */
+class GenMBMaps {
+  constructor({ appId, baseUrl, mapsApiKey } = {}) {
+    if (!appId) throw new Error('GenMBMaps: appId is required')
+    this.appId = appId
+    this.baseUrl = ((baseUrl || '/api/maps').replace(/\/$/, '')) + '/' + appId
+    this.apiKey = mapsApiKey || null
+    this.places = {
+      search: (q, opts) => this._post('/places/search', { q, ...opts }),
+      nearby: (center, radius, type) => this._post('/places/nearby', { center, radius, type }),
+    }
+  }
+  async ready() { return this }
+  async render(elementId, opts = {}) {
+    const el = (typeof elementId === 'string') ? document.getElementById(elementId) : elementId
+    if (!el) throw Object.assign(new Error('maps: element not found'), { code: 'element-not-found' })
+
+    const center = opts.center || { lat: 0, lng: 0 }
+    const zoom = opts.zoom || 12
+    const markers = (opts.markers || []).filter(m => m && isFinite(Number(m.lat)) && isFinite(Number(m.lng)))
+
+    // 1. Use Google Maps when a key is available (server-provided first, client key as fallback).
+    let scriptUrl = null
+    try {
+      const res = await this._post('/render', { elementId, ...opts })
+      if (res && res.scriptUrl) scriptUrl = res.scriptUrl
+    } catch (err) { /* fall through */ }
+    if (!scriptUrl && this.apiKey) {
+      scriptUrl = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(this.apiKey)
+    }
+    if (scriptUrl) {
+      try {
+        await GenMBMaps._loadScript(scriptUrl)
+        const g = window.google && window.google.maps
+        if (g) {
+          GenMBMaps._deinit(el)
+          const map = new g.Map(el, {
+            center: { lat: Number(center.lat), lng: Number(center.lng) }, zoom,
+            mapTypeControl: false, streetViewControl: false, fullscreenControl: false, clickableIcons: false,
+          })
+          const markerObjs = markers.map(m => new g.Marker({
+            position: { lat: Number(m.lat), lng: Number(m.lng) },
+            map, title: m.title || '',
+            label: m.label ? String(m.label) : undefined,
+          }))
+          return {
+            instance: map, markers: markerObjs, provider: 'google',
+            destroy() {
+              markerObjs.forEach(mk => { try { mk.setMap(null) } catch (e) {} })
+              if (el) el.innerHTML = ''
+            },
+          }
+        }
+      } catch (err) { /* Google failed (bad/blocked key) - fall back to keyless Leaflet */ }
+    }
+
+    // 2. Keyless fallback: Leaflet + OpenStreetMap (no API key, no billing).
+    return GenMBMaps._renderLeaflet(el, center, zoom, markers)
+  }
+  async geocode(address) { return this._post('/geocode', { address }) }
+  async reverseGeocode(lat, lng) { return this._post('/reverse-geocode', { lat, lng }) }
+  async directions(from, to, mode = 'driving') { return this._post('/directions', { from, to, mode }) }
+  static _loadScript(url) {
+    if (window.google && window.google.maps) return Promise.resolve()
+    if (GenMBMaps._scriptPromise) return GenMBMaps._scriptPromise
+    GenMBMaps._scriptPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script')
+      s.src = url; s.async = true; s.defer = true
+      s.onload = () => resolve()
+      s.onerror = () => { GenMBMaps._scriptPromise = null; reject(new Error('maps: failed to load Google Maps JS')) }
+      document.head.appendChild(s)
+    })
+    return GenMBMaps._scriptPromise
+  }
+  static _loadLeaflet() {
+    if (window.L && window.L.map) return Promise.resolve()
+    if (GenMBMaps._leafletPromise) return GenMBMaps._leafletPromise
+    GenMBMaps._leafletPromise = new Promise((resolve, reject) => {
+      if (!document.querySelector('link[data-genmb-leaflet]')) {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+        link.setAttribute('data-genmb-leaflet', '1')
+        document.head.appendChild(link)
+      }
+      const s = document.createElement('script')
+      s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; s.async = true
+      s.onload = () => resolve()
+      s.onerror = () => { GenMBMaps._leafletPromise = null; reject(new Error('maps: failed to load Leaflet')) }
+      document.head.appendChild(s)
+    })
+    return GenMBMaps._leafletPromise
+  }
+  static _deinit(el) {
+    // Tear down any prior Leaflet map on this element so re-render is safe
+    // (Leaflet throws "Map container is already initialized" otherwise).
+    if (el.__genmbLeafletMap) { try { el.__genmbLeafletMap.remove() } catch (e) {} el.__genmbLeafletMap = null }
+    if (el) el.innerHTML = ''
+  }
+  static async _renderLeaflet(el, center, zoom, markers) {
+    await GenMBMaps._loadLeaflet()
+    const L = window.L
+    if (!L) throw Object.assign(new Error('maps: Leaflet failed to load'), { code: 'maps-load-failed' })
+    GenMBMaps._deinit(el)
+    const map = L.map(el).setView([Number(center.lat), Number(center.lng)], zoom)
+    el.__genmbLeafletMap = map
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; OpenStreetMap contributors',
+    }).addTo(map)
+    // divIcon avoids Leaflet's default marker-image 404s and shows the emoji label.
+    const markerObjs = markers.map(m => {
+      const label = m.label ? String(m.label) : '📍'
+      const icon = L.divIcon({
+        className: 'genmb-leaflet-pin',
+        html: '<span style="font-size:22px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))">' + label + '</span>',
+        iconSize: [24, 24], iconAnchor: [12, 12],
+      })
+      const mk = L.marker([Number(m.lat), Number(m.lng)], { icon, title: m.title || '' }).addTo(map)
+      if (m.title) mk.bindTooltip(m.title)
+      return mk
+    })
+    setTimeout(() => { try { map.invalidateSize() } catch (e) {} }, 0)
+    return {
+      instance: map, markers: markerObjs, provider: 'leaflet',
+      destroy() {
+        try { map.remove() } catch (e) {}
+        if (el.__genmbLeafletMap === map) el.__genmbLeafletMap = null
+        if (el) el.innerHTML = ''
+      },
+    }
+  }
+  async _post(path, body) {
+    const res = await fetch(this.baseUrl + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) })
+    const json = await res.json()
+    if (!res.ok) throw Object.assign(new Error(json.error || 'maps failed'), { code: json.code })
+    // Backend returns HTTP 200 with {success:false, error} envelopes on
+    // soft failures (no API key, geocode miss); don't swallow them.
+    if (json && json.success === false) throw Object.assign(new Error(json.error || 'maps failed'), { code: json.code })
+    return json.data !== undefined ? json.data : json
+  }
+}
+GenMBMaps._scriptPromise = null
+GenMBMaps._leafletPromise = null
+window.GenMBMaps = GenMBMaps
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR",
+  "baseUrl": "/api/maps"
+};
+window.genmb.maps = new GenMBMaps(config);
+window.genmb.maps.ready();
+})();
+</script>
+    <script>
+// GenMB translate SDK (Capability)
+(function() {
+/**
+ * GenMB Translate SDK - window.genmb.translate
+ * Google Cloud Translation for multilingual storefronts and UI.
+ */
+class GenMBTranslate {
+  constructor({ appId, baseUrl } = {}) {
+    if (!appId) throw new Error('GenMBTranslate: appId is required')
+    this.appId = appId
+    this.baseUrl = ((baseUrl || '/api/translate').replace(/\/$/, '')) + '/' + appId
+    this._cache = new Map()
+  }
+  async ready() { return this }
+  async text(input, targetLang, sourceLang) {
+    const key = `${input}|${targetLang}|${sourceLang || ''}`
+    if (this._cache.has(key)) return this._cache.get(key)
+    const result = await this._post('/text', { input, targetLang, sourceLang })
+    this._cache.set(key, result)
+    return result
+  }
+  async batch(inputs, targetLang) { return this._post('/batch', { inputs, targetLang }) }
+  async detect(text) { return this._post('/detect', { text }) }
+  async languages() {
+    const res = await fetch(this.baseUrl + '/languages', { credentials: 'include' })
+    const json = await res.json()
+    return json.data !== undefined ? json.data : json
+  }
+  async _post(path, body) {
+    const res = await fetch(this.baseUrl + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    })
+    const json = await res.json()
+    if (!res.ok) throw Object.assign(new Error(json.error || 'translate failed'), { code: json.code })
+    return json.data !== undefined ? json.data : json
+  }
+}
+window.GenMBTranslate = GenMBTranslate
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR",
+  "baseUrl": "/api/translate"
+};
+window.genmb.translate = new GenMBTranslate(config);
+window.genmb.translate.ready();
+})();
+</script>
+    <!-- GenMB Capabilities END -->
+  </head>
+<body data-genmb-id="accpL6e4">
+  <div id="root" data-genmb-id="gd4TUV9b"></div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+/* Layout refresh: roomier desktop, cleaner cards, and more balanced responsive spacing. */
+:root {
+  --page-gutter: clamp(0.9rem, 3vw, 1.5rem);
+  --section-gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, hsl(var(--background) / 0.86), hsl(var(--background) / 0.48)),
+    radial-gradient(circle at 18% -10%, hsl(var(--marigold) / 0.14), transparent 32rem),
+    radial-gradient(circle at 86% 4%, hsl(var(--violet-dead) / 0.16), transparent 34rem);
+}
+
+header.glass {
+  border-bottom: 1px solid hsl(var(--border) / 0.78);
+  box-shadow: 0 8px 28px rgba(98, 38, 132, 0.10);
+}
+
+header .max-w-6xl,
+main.max-w-6xl {
+  max-width: 1180px !important;
+}
+
+main.max-w-6xl {
+  padding-left: var(--page-gutter) !important;
+  padding-right: var(--page-gutter) !important;
+}
+
+main > div {
+  gap: var(--section-gap) !important;
+}
+
+main section,
+main article,
+main .art-card,
+.places-control-card,
+.places-results-section,
+.map-panel-card,
+.itinerary-builder-card,
+.itinerary-empty-card,
+.itinerary-ai-card,
+.itinerary-saved-card,
+.itinerary-save-panel {
+  box-shadow: var(--shadow-sm);
+}
+
+main section:hover,
+main article:hover,
+main .art-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.home-hero-section,
+.places-hero-card,
+.itinerary-hero-card,
+.map-hero-card {
+  border-radius: clamp(1.15rem, 2.6vw, 1.85rem) !important;
+}
+
+.home-hero-fill,
+.places-hero-content,
+.itinerary-hero-content,
+.map-hero-content {
+  padding: clamp(1.15rem, 4vw, 3rem) !important;
+}
+
+.home-hero-fill h1,
+.places-hero-content h1,
+.itinerary-hero-content h1,
+.map-hero-content h1 {
+  letter-spacing: -0.075em !important;
+  text-wrap: balance;
+}
+
+.home-hero-fill p,
+.places-hero-intro,
+.itinerary-hero-content p,
+.map-hero-content p {
+  text-wrap: pretty;
+}
+
+@media (min-width: 1024px) {
+  .safe-bottom { padding-bottom: 1.75rem !important; }
+  main.max-w-6xl { padding-top: 1.35rem !important; padding-bottom: 2.5rem !important; }
+
+  header .max-w-6xl { min-height: 4.4rem; }
+  header select#language { width: 124px !important; max-width: 124px !important; }
+
+  .home-hero-fill,
+  .places-hero-card,
+  .itinerary-hero-card,
+  .map-hero-card {
+    min-height: 620px !important;
+  }
+
+  .home-hero-fill > .relative.z-10 {
+    min-height: calc(620px - 6rem) !important;
+  }
+
+  .places-hero-content,
+  .itinerary-hero-content,
+  .map-hero-content {
+    min-height: 620px !important;
+  }
+
+  main section[class*="bg-[#fff7ec]"] > div:last-child {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  main section[class*="bg-[#fff7ec]"] > div:last-child > button {
+    min-height: 280px !important;
+    padding: 1.15rem !important;
+  }
+
+  main section[class*="bg-[#fff7ec]"] > div:last-child > button h3 { font-size: 1.35rem !important; }
+  main section[class*="bg-[#fff7ec]"] > div:last-child > button p { font-size: .9rem !important; line-height: 1.45 !important; }
+}
+
+@media (max-width: 767px) {
+  header.glass { backdrop-filter: blur(22px); }
+  main.max-w-6xl { padding-left: .85rem !important; padding-right: .85rem !important; }
+  .bottom-nav { border-top-width: 1px; }
+}
