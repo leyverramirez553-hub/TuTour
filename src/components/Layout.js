@@ -23,6 +23,8 @@ const navLabelsByLanguage = {
   zh: { home: '首页', places: '地点', itinerary: '行程', map: '地图', events: '活动' }
 };
 
+const logoSvg = '/api/apps/romcWH54d4SR/assets/TuTournewLogobigger.png';
+
 export function Layout() {
   const { t, language: lang, setLanguage } = useLanguage();
   const setStoreLanguage = useGuideStore(s => s.setLanguage);
@@ -90,7 +92,7 @@ export function Layout() {
       <header className="sticky top-0 z-40 glass">
         <div className="mx-auto max-w-6xl px-3 py-2 flex items-center gap-2 justify-between min-w-0">
           <${Link} to="/" className="tutour-logo-link focus-ring inline-flex items-center shrink-0 rounded-[var(--radius-md)]" aria-label="TuTour Oaxaca home">
-            <img className="tutour-image-logo" src="/api/apps/romcWH54d4SR/assets/TuTournewLogobigger.png" alt="TuTour" />
+            <img className="tutour-image-logo" src=${logoSvg} alt="TuTour" />
           </${Link}>
           <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label="Primary navigation">
             ${nav.map(item => { const Icon = item.icon; return html`<${NavLink} key=${item.to} to=${item.to} className=${({ isActive }) => `focus-ring inline-flex min-h-[40px] items-center gap-2 rounded-full border px-4 py-2 text-sm font-black ${isActive ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-[var(--shadow-sm)]' : 'border-[hsl(var(--border)/0.72)] bg-[hsl(var(--card)/0.64)] text-[hsl(var(--foreground))] hover:border-[hsl(var(--primary)/0.55)] hover:bg-[hsl(var(--muted)/0.72)]'}`}><${Icon} className="h-4 w-4" />${item.label}</${NavLink}>`; })}

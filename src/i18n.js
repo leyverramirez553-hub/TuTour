@@ -22,7 +22,7 @@ const bundledLocales = {
 
 // Pre-bundled English fallback to ensure instantaneous first-paint render with zero delay or flicker
 const enFallback = {
-  "appName": "TuTour",
+  "appName": "FOOD TOURS COMING SOON!!!",
   "saved": "Saved",
   "save": "Save",
   "saveTrip": "Save trip",

@@ -145,19 +145,30 @@ class GenMBGoogleAuth {
         return
       }
 
+      var pollSession = null
+
       var cleanup = function () {
         clearTimeout(timeout)
         clearInterval(checkClosed)
+        if (pollSession) clearInterval(pollSession)
         window.removeEventListener('message', handleMessage)
       }
 
       var self = this
 
+      var finishWithUser = function (user) {
+        if (settled) return
+        settled = true
+        cleanup()
+        try { popup.close() } catch (e) { /* cross-origin / already closed */ }
+        resolve(user)
+      }
+
       var timeout = setTimeout(function () {
         if (settled) return
         settled = true
         cleanup()
-        popup.close()
+        try { popup.close() } catch (e) { /* cross-origin / already closed */ }
         var error = new Error("Sign-in took too long. Please try again.")
         error.code = 'SIGN_IN_TIMEOUT'
         self.onError(error)
@@ -169,12 +180,11 @@ class GenMBGoogleAuth {
         var isGenmb = origin === 'https://genmb.com' || origin.endsWith('.genmb.com')
         var isLocalhost = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')
         if (!isGenmb && !isLocalhost) return
-
         if (settled) return
-        settled = true
-        cleanup()
 
         if (event.data && event.data.error) {
+          settled = true
+          cleanup()
           var error = new Error(event.data.error)
           error.code = 'SIGN_IN_FAILED'
           self.onError(error)
@@ -183,16 +193,40 @@ class GenMBGoogleAuth {
           self.user = event.data.user
           self._notifyListeners()
           self._startRefreshTimer()
-          resolve(self.user)
+          finishWithUser(self.user)
         }
       }
 
+      // Primary completion path. Google's pages send Cross-Origin-Opener-Policy,
+      // which severs window.opener and blocks reading popup.closed once the popup
+      // leaves our origin - so the callback's postMessage AND the closed-poll below
+      // are both unreliable. The session cookie IS set on .genmb.com the moment
+      // sign-in completes, so poll the session endpoint and resolve as soon as the
+      // user appears. (Mirrors how window.genmb.connectors.connect() polls status.)
+      var checkingSession = false
+      pollSession = setInterval(function () {
+        if (settled || checkingSession) return
+        checkingSession = true
+        self.checkSession().then(function (user) {
+          checkingSession = false
+          if (user && !settled) finishWithUser(user)
+        }).catch(function () { checkingSession = false })
+      }, 1500)
+
       var checkClosed = setInterval(function () {
-        if (popup.closed && !settled) {
-          settled = true
-          cleanup()
-          resolve(null)
-        }
+        var closed = false
+        try { closed = popup.closed } catch (e) { closed = false }
+        if (!closed || settled) return
+        // The popup closed. The user may have just completed sign-in, so give the
+        // session one final check before treating the close as a cancellation.
+        self.checkSession().then(function (user) {
+          if (settled) return
+          if (user) finishWithUser(user)
+          else { settled = true; cleanup(); resolve(null) }
+        }).catch(function () {
+          if (settled) return
+          settled = true; cleanup(); resolve(null)
+        })
       }, 500)
 
       window.addEventListener('message', handleMessage)
@@ -529,6 +563,148 @@ const config = {
 };
 window.genmb.auth = new GenMBGoogleAuth(config);
 window.genmb.auth.ready();
+})();
+</script>
+    <script>
+// GenMB email SDK (Capability)
+(function() {
+/**
+ * GenMB Email SDK - window.genmb.email
+ *
+ * Send transactional email. BYOK for Resend/Postmark/SendGrid via Connections page;
+ * falls back to a Gmail-API relay (rate-limited 100/day/app) when no key is configured.
+ */
+class GenMBEmail {
+  constructor({ appId, baseUrl } = {}) {
+    if (!appId) throw new Error('GenMBEmail: appId is required')
+    this.appId = appId
+    this.baseUrl = ((baseUrl || '/api/email').replace(/\/$/, '')) + '/' + appId
+  }
+
+  async ready() { return this }
+
+  async send(opts) {
+    return this._post('/send', opts)
+  }
+
+  /**
+   * Build an iCalendar (.ics) attachment for send({ attachments: [...] }).
+   * Defaults produce an all-day "Out of Office" block that, once the recipient
+   * clicks Accept in Outlook, shows them as Out of Office (Teams reflects it too).
+   *
+   * @param {object} o
+   * @param {string} o.date        - all-day date 'YYYY-MM-DD' (used when allDay)
+   * @param {string} [o.endDate]   - exclusive all-day end 'YYYY-MM-DD' (defaults to date+1)
+   * @param {string|Date} [o.start]- timed start (used when allDay=false)
+   * @param {string|Date} [o.end]  - timed end (used when allDay=false)
+   * @param {boolean} [o.allDay=true]
+   * @param {string} [o.summary='Out of Office']
+   * @param {string} [o.description='']
+   * @param {string} [o.location='']
+   * @param {string} [o.organizer] - organizer email
+   * @param {string} [o.attendee]  - attendee email (the person being blocked)
+   * @param {string} [o.uid]       - stable UID (re-send with same UID to update)
+   * @param {string} [o.method='REQUEST']
+   * @param {string} [o.busyStatus='OOF'] - OOF | BUSY | FREE | TENTATIVE
+   * @returns {{filename: string, content: string, contentType: string}}
+   */
+  buildICS(o = {}) {
+    const pad = (n) => (n < 10 ? '0' + n : '' + n)
+    const dt = (d) => {
+      const x = d instanceof Date ? d : new Date(d)
+      return x.getUTCFullYear() + pad(x.getUTCMonth() + 1) + pad(x.getUTCDate()) + 'T' +
+        pad(x.getUTCHours()) + pad(x.getUTCMinutes()) + pad(x.getUTCSeconds()) + 'Z'
+    }
+    const dateOnly = (s) => String(s).replace(/-/g, '')
+    const nextDay = (s) => {
+      const x = new Date(s + 'T00:00:00Z'); x.setUTCDate(x.getUTCDate() + 1)
+      return x.getUTCFullYear() + pad(x.getUTCMonth() + 1) + pad(x.getUTCDate())
+    }
+    const esc = (s) => String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n')
+
+    const allDay = o.allDay !== false
+    const method = (o.method || 'REQUEST').toUpperCase()
+    const busy = (o.busyStatus || 'OOF').toUpperCase()
+    const uid = o.uid || ((window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : Date.now() + '-' + Math.round(Math.random() * 1e9)) + '@genmb')
+    const stamp = dt(new Date())
+
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//GenMB//Leave Signal//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:' + method,
+      'BEGIN:VEVENT',
+      'UID:' + uid,
+      'DTSTAMP:' + stamp,
+      'SEQUENCE:0',
+      'STATUS:CONFIRMED',
+      'TRANSP:OPAQUE',
+      'SUMMARY:' + esc(o.summary || 'Out of Office'),
+    ]
+    if (allDay) {
+      lines.push('DTSTART;VALUE=DATE:' + dateOnly(o.date))
+      // DTEND is EXCLUSIVE for all-day events (RFC 5545): block the day AFTER the
+      // last off-day so a leave range like date..endDate covers endDate itself.
+      lines.push('DTEND;VALUE=DATE:' + nextDay(o.endDate || o.date))
+    } else {
+      lines.push('DTSTART:' + dt(o.start))
+      lines.push('DTEND:' + dt(o.end))
+    }
+    if (o.description) lines.push('DESCRIPTION:' + esc(o.description))
+    if (o.location) lines.push('LOCATION:' + esc(o.location))
+    if (o.organizer) lines.push('ORGANIZER:mailto:' + o.organizer)
+    if (o.attendee) lines.push('ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:' + o.attendee)
+    // Microsoft extensions: drive Outlook/Teams to show the block as Out of Office.
+    lines.push('X-MICROSOFT-CDO-BUSYSTATUS:' + busy)
+    lines.push('X-MICROSOFT-CDO-ALLDAYEVENT:' + (allDay ? 'TRUE' : 'FALSE'))
+    lines.push('END:VEVENT', 'END:VCALENDAR')
+
+    const ics = lines.join('\r\n')
+    const content = btoa(unescape(encodeURIComponent(ics)))
+    return { filename: 'invite.ics', content, contentType: 'text/calendar; method=' + method + '; charset=UTF-8' }
+  }
+
+  async listEvents(opts = {}) {
+    const qs = new URLSearchParams()
+    for (const [k, v] of Object.entries(opts)) {
+      if (v != null) qs.set(k, String(v))
+    }
+    const url = this.baseUrl + '/events' + (qs.toString() ? `?${qs}` : '')
+    const res = await fetch(url, { credentials: 'include' })
+    const json = await res.json()
+    return json.data !== undefined ? json.data : json
+  }
+
+  async _post(path, body) {
+    const res = await fetch(this.baseUrl + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      const e = new Error(err.error || `email ${path} failed (${res.status})`)
+      e.code = err.code || `HTTP_${res.status}`
+      throw e
+    }
+    const json = await res.json()
+    return json.data !== undefined ? json.data : json
+  }
+}
+
+window.GenMBEmail = GenMBEmail
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR",
+  "baseUrl": "/api/email"
+};
+window.genmb.email = new GenMBEmail(config);
+window.genmb.email.ready();
 })();
 </script>
     <script>
@@ -1113,6 +1289,60 @@ window.genmb.db = new GenMBDataClient(config);
 })();
 </script>
     <script>
+// GenMB translate SDK (Capability)
+(function() {
+/**
+ * GenMB Translate SDK - window.genmb.translate
+ * Google Cloud Translation for multilingual storefronts and UI.
+ */
+class GenMBTranslate {
+  constructor({ appId, baseUrl } = {}) {
+    if (!appId) throw new Error('GenMBTranslate: appId is required')
+    this.appId = appId
+    this.baseUrl = ((baseUrl || '/api/translate').replace(/\/$/, '')) + '/' + appId
+    this._cache = new Map()
+  }
+  async ready() { return this }
+  async text(input, targetLang, sourceLang) {
+    const key = `${input}|${targetLang}|${sourceLang || ''}`
+    if (this._cache.has(key)) return this._cache.get(key)
+    const result = await this._post('/text', { input, targetLang, sourceLang })
+    this._cache.set(key, result)
+    return result
+  }
+  async batch(inputs, targetLang) { return this._post('/batch', { inputs, targetLang }) }
+  async detect(text) { return this._post('/detect', { text }) }
+  async languages() {
+    const res = await fetch(this.baseUrl + '/languages', { credentials: 'include' })
+    const json = await res.json()
+    return json.data !== undefined ? json.data : json
+  }
+  async _post(path, body) {
+    const res = await fetch(this.baseUrl + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    })
+    const json = await res.json()
+    if (!res.ok) throw Object.assign(new Error(json.error || 'translate failed'), { code: json.code })
+    return json.data !== undefined ? json.data : json
+  }
+}
+window.GenMBTranslate = GenMBTranslate
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR",
+  "baseUrl": "/api/translate"
+};
+window.genmb.translate = new GenMBTranslate(config);
+window.genmb.translate.ready();
+})();
+</script>
+    <script>
 // GenMB maps SDK (Capability)
 (function() {
 /** GenMB Maps SDK - render maps, geocoding, places, directions.
@@ -1276,57 +1506,72 @@ window.genmb.maps.ready();
 })();
 </script>
     <script>
-// GenMB translate SDK (Capability)
+// GenMB audit-log SDK (Capability)
 (function() {
 /**
- * GenMB Translate SDK - window.genmb.translate
- * Google Cloud Translation for multilingual storefronts and UI.
+ * GenMB Audit Log SDK - window.genmb.audit
+ *
+ * Append-only audit trail. Fire-and-forget log() from the success path of
+ * any sensitive action; list() for the admin view.
  */
-class GenMBTranslate {
+class GenMBAudit {
   constructor({ appId, baseUrl } = {}) {
-    if (!appId) throw new Error('GenMBTranslate: appId is required')
+    if (!appId) throw new Error('GenMBAudit: appId is required')
     this.appId = appId
-    this.baseUrl = ((baseUrl || '/api/translate').replace(/\/$/, '')) + '/' + appId
-    this._cache = new Map()
+    this.baseUrl = ((baseUrl || '/api/audit').replace(/\/$/, '')) + '/' + appId
   }
+
   async ready() { return this }
-  async text(input, targetLang, sourceLang) {
-    const key = `${input}|${targetLang}|${sourceLang || ''}`
-    if (this._cache.has(key)) return this._cache.get(key)
-    const result = await this._post('/text', { input, targetLang, sourceLang })
-    this._cache.set(key, result)
-    return result
-  }
-  async batch(inputs, targetLang) { return this._post('/batch', { inputs, targetLang }) }
-  async detect(text) { return this._post('/detect', { text }) }
-  async languages() {
-    const res = await fetch(this.baseUrl + '/languages', { credentials: 'include' })
-    const json = await res.json()
-    return json.data !== undefined ? json.data : json
-  }
-  async _post(path, body) {
-    const res = await fetch(this.baseUrl + path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(body),
+
+  async log(action, entityType, entityId, meta) {
+    if (!action) throw new Error('audit.log requires action')
+    return this._json('POST', '/log', {
+      action,
+      entityType: entityType || null,
+      entityId: entityId || null,
+      meta: meta || null,
     })
+  }
+
+  async list({ entityType, entityId, action, userId, limit, before } = {}) {
+    const params = []
+    if (entityType) params.push('entityType=' + encodeURIComponent(entityType))
+    if (entityId) params.push('entityId=' + encodeURIComponent(entityId))
+    if (action) params.push('action=' + encodeURIComponent(action))
+    if (userId) params.push('userId=' + encodeURIComponent(userId))
+    if (limit) params.push('limit=' + limit)
+    if (before) params.push('before=' + encodeURIComponent(before))
+    const qs = params.length ? '?' + params.join('&') : ''
+    return this._json('GET', '/list' + qs)
+  }
+
+  async _json(method, path, body) {
+    const init = { method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' }
+    if (body !== undefined) init.body = JSON.stringify(body)
+    const res = await fetch(this.baseUrl + path, init)
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      const e = new Error(err.error || `audit ${path} failed (${res.status})`)
+      e.code = err.code || `HTTP_${res.status}`
+      e.status = res.status
+      throw e
+    }
     const json = await res.json()
-    if (!res.ok) throw Object.assign(new Error(json.error || 'translate failed'), { code: json.code })
     return json.data !== undefined ? json.data : json
   }
 }
-window.GenMBTranslate = GenMBTranslate
+
+window.GenMBAudit = GenMBAudit
 
 
 // Auto-initialize
 window.genmb = window.genmb || {};
 const config = {
   "appId": "romcWH54d4SR",
-  "baseUrl": "/api/translate"
+  "baseUrl": "/api/audit"
 };
-window.genmb.translate = new GenMBTranslate(config);
-window.genmb.translate.ready();
+window.genmb.audit = new GenMBAudit(config);
+window.genmb.audit.ready();
 })();
 </script>
     <!-- GenMB Capabilities END -->

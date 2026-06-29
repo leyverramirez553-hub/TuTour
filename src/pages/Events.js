@@ -4,6 +4,7 @@ import { html } from '../jsx.js';
 import { useLanguage } from '../i18n.js';
 
 const officialCalendarUrl = 'https://oaxaca.travel/index.php/es/component/jevents/monthcalendar/2026/1/31?Itemid=0';
+const eventHeroBackgroundImage = '/api/apps/romcWH54d4SR/assets/TuTourEventsimage.png';
 
 const eventCopy = {
   en: {
@@ -380,7 +381,7 @@ export function Events() {
   return html`
     <div className="grid gap-4 min-w-0 events-page">
       <section className="relative overflow-hidden rounded-[1.35rem] border-2 border-[hsl(var(--border))] bg-[#321249] p-5 text-[#fff7ec] shadow-[var(--shadow-lg)] md:p-8">
-        <div className="absolute inset-0 opacity-70 bg-[radial-gradient(circle_at_12%_12%,rgba(251,146,60,.55),transparent_16rem),radial-gradient(circle_at_86%_20%,rgba(217,70,239,.45),transparent_18rem),linear-gradient(135deg,rgba(80,18,115,.96),rgba(240,102,10,.80))]"></div>
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80" style=${{ backgroundImage: `linear-gradient(135deg, rgba(50,18,73,.86), rgba(240,102,10,.50)), radial-gradient(circle at 12% 12%, rgba(251,146,60,.42), transparent 16rem), url(${eventHeroBackgroundImage})` }} aria-hidden="true"></div>
         <div className="relative grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
           <div>
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-black uppercase tracking-[.08em] text-[#ffe7a3]"><${Megaphone} className="h-4 w-4" />${copy.kicker}</span>

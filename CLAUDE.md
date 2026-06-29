@@ -1,161 +1,234 @@
 # TuTour
-Polished multilingual Oaxaca tourism guide with curated recommendations, safety advice, Google Maps links, AI local-guide demos, and 1-day itinerary generation.
+Polished multilingual Oaxaca tourism guide with curated recommendations, safety advice, Google Maps links, AI local guide chat, and 1-day / multi-day itinerary planning.
 
 ## Masterplan
 
-- Help Oaxaca visitors discover vetted food, mezcal, market, artisan, culture, nature, event, service, experience, and day-trip stops with practical local context.
-- Keep the main travel guide static-host friendly: browse, filter, favorite, plan, save/offline mode, map links, and itinerary generation run client-side from curated data.
-- Render traveler-facing UI in English, Spanish, French, German, Italian, Portuguese, Japanese, and Chinese, falling back to curated source text when translations are missing.
-- Use GenMB capabilities as progressive enhancements only: auth, AI chat, contact, maps/search, translate, KV notes, and `travel_notes` DB demos must never block core browsing.
-- Convert discovery into action through “add to plan,” favorites, directions, booking-style cards, floating AI local guide, and generated morning/afternoon/night Oaxaca plans.
+- Help Oaxaca visitors discover food, mezcal, markets, artisan stops, culture, nature, events, services, experiences, and day trips with practical local context.
+- Turn discovery into action with favorites, “add to plan”, generated itineraries, Google Maps directions, map search, saved/offline trip cues, and downloadable plans.
+- Render traveler-facing copy in English, Spanish, French, German, Italian, Portuguese, Japanese, and Chinese, with safe fallbacks to curated English/default place data.
+- Use GenMB capabilities progressively: auth, maps/search, AI chat/text, translation, contact form, KV quick notes, relational DB travel notes, audit/auth-backed workflows.
+- Preserve local-guide usefulness: night transport, hydration, market etiquette, accessibility notes, rain plans, cultural customs, and safety advice.
 
 ## Tech Stack & Architecture
 
 - **Runtime:** React SPA mounted by `src/main.js` into `#root` in `index.html`.
-- **Routing:** `src/App.js` uses `HashRouter`, nested `Routes`, and shared `src/components/Layout.js`. Hash routing is intentional for static/preview hosting; do not switch to browser history unless server rewrites are added.
-- **Templates:** Components do **not** use JSX. `src/jsx.js` binds `htm` to `React.createElement`; write UI as:
+- **Routing:** `src/App.js` uses `HashRouter`, `Routes`, and shared `src/components/Layout.js`. Hash routing is intentional for static/preview hosting; do not switch to browser history unless server rewrites are added.
+- **Component syntax:** This codebase does **not** use JSX. `src/jsx.js` binds `htm` to `React.createElement`; components return `html` templates:
   ```js
   return html`<section className="...">${content}</section>`;
   ```
-- **Styling:** Tailwind CDN is loaded in `index.html`; app-specific CSS lives in:
-  - `styles/main.css` — theme variables, Oaxaca palette, dark mode, glass UI, cards, focus rings, shadows.
+- **Providers:** `src/mainProviders.js` currently returns `React.Fragment`. Add app-wide providers there, not in `src/main.js`.
+- **Styling:** Tailwind CDN is loaded in `index.html`; app CSS is split by concern:
+  - `styles/main.css` — Oaxaca theme tokens, cards, glass UI, dark mode, shadows, focus rings.
   - `styles/logo-fix.css` — TuTour image logo sizing/cropping.
-  - `styles/layout-improvements.css` — safe-area, mobile overflow, responsive spacing.
+  - `styles/layout-improvements.css` — safe-area handling, responsive spacing, mobile overflow fixes.
   - `styles/home-tabs-compact.css` — compact home tab layout.
-- **Icons:** `lucide-react` powers navigation, cards, itinerary controls, chatbot, settings, and capability demos.
+- **Icons:** `lucide-react` powers navigation, cards, itinerary controls, settings, chatbot, and capability demos.
 - **State:** `src/store/useGuideStore.js` is the persistent client store for selected category, mirrored language, dark mode, favorites, itinerary stops, route preferences, saved/offline trips, and trip state.
-- **Providers:** `src/mainProviders.js` currently returns `React.Fragment`; add app-wide providers there instead of editing `src/main.js`.
 - **Dark mode:** `src/App.js` watches `useGuideStore(s => s.dark)` and toggles `document.documentElement.classList`.
-- **I18n:** `src/i18n.js` exposes `useLanguage()`. Language metadata is in `src/data/i18n.js`; bundles are in `src/locales/*.json`; settings copy is in `src/data/settingsI18n.js`; per-place translations are in `src/data/placeLocaleEntries.js`.
-- **Language sync gotcha:** `src/components/Layout.js` and `src/components/CategoryFilter.js` mirror `useLanguage()` into `useGuideStore`. Preserve this: itinerary generation, Google Maps localization, generated links, and utilities read the store language.
-- **Curated data:** `src/data/places.js` is the primary static database: categories, place records, Google Maps URLs, ratings, prices, coordinates/areas, safety tips, photos, events, services, experiences, and itinerary metadata.
-- **Place translations:** `src/components/PlaceCard.js` derives keys with `placeFieldKeyFor()`, `descriptionKeyFor()`, and `translatedPlaceField()`. Missing translations intentionally fall back to curated place fields.
-- **Maps:** `src/utils/googleMapsLinks.js` localizes Google Maps URLs. `Layout.js` calls `localizeGoogleMapAnchors(document, lang)` and attaches a `MutationObserver`, so links inserted after render receive selected-language parameters.
-- **GenMB SDK:** `index.html` injects optional `window.genmb` SDKs for auth, KV, DB, maps, contact form, translate, and AI. Always guard `window.genmb.*` before use.
+- **I18n:** `src/i18n.js` exposes `useLanguage()`. Supported language metadata is in `src/data/i18n.js`; locale bundles are `src/locales/*.json`; settings copy is in `src/data/settingsI18n.js`; place-specific overrides are in `src/data/placeLocaleEntries.js`.
+- **Language sync gotcha:** `src/components/Layout.js` and `src/components/CategoryFilter.js` mirror `useLanguage()` into `useGuideStore`. Keep this because itinerary generation, Google Maps URL localization, floating chat, and utilities read the store language.
+- **Curated data:** `src/data/places.js` is the main static guide database: categories, places, Google Maps URLs, ratings, prices/durations, coordinates/areas, safety tips, photos, events, services, experiences, day trips, and itinerary metadata.
+- **Place translation fallback:** `src/components/PlaceCard.js` uses `placeFieldKeyFor()`, `descriptionKeyFor()`, `translatedPlaceField()`, and `translatedOrFallback()`. Missing translations intentionally fall back to curated place fields; never render blank recommendation text.
+- **Images:** `src/components/PlaceCard.js` contains targeted Google/asset image overrides and deterministic `fallbackPlaceImageFor()` Picsum seeds. Prefer real Google Maps/photo assets where available, but keep fallback URLs stable.
+- **Maps:** `src/utils/googleMapsLinks.js` localizes Google Maps URLs. `Layout.js` calls `localizeGoogleMapAnchors(document, lang)`, attaches a `MutationObserver`, and localizes links again before click navigation.
+- **External services:** `index.html` injects GenMB SDKs under `window.genmb` for auth, AI/chat, email/contact, KV, relational DB, maps/search, translate, and audit-log. Code must guard capability availability because preview/deploy contexts can differ.
 
 ## File Structure
 
-```txt
-index.html                         Tailwind/CSS entry, metadata, injected GenMB SDK capabilities.
-src/main.js                        React entry; mounts App with Providers.
+```text
+index.html                         App shell; Tailwind CDN, CSS links, GenMB SDK injection, #root.
+CLAUDE.md                          Project instructions/documentation; keep aligned with this document.
+src/main.js                        React entrypoint mounting App through Providers.
 src/mainProviders.js               App-wide provider hook point; currently Fragment only.
-src/jsx.js                         htm binding; required for non-JSX templates.
-src/App.js                         HashRouter routes and dark-mode document toggle.
-src/components/Layout.js           Shared shell, header/nav, language menu, offline banner, Google Maps link localization, floating guide.
-src/components/CategoryFilter.js   Home/place category chips; syncs i18n language into guide store.
-src/components/PlaceCard.js        Recommendation card, ratings, image fallbacks/overrides, translation-key helpers.
-src/components/FloatingLocalGuide.js Optional AI chat widget with geolocation prompts and localized copy.
-src/components/CapabilityHub.js    Settings capability demos: auth-aware contact, KV notes, DB notes, translate, maps search.
-src/pages/Home.js                  Landing page and compact tabbed discovery.
-src/pages/Places.js                Filterable curated recommendation list.
-src/pages/Itinerary.js             1-day/multi-day planner, saved trips, AI guide note integration.
-src/pages/MapPage.js               Oaxaca stop map/list and map fallback behavior.
-src/pages/Events.js                Curated events page.
-src/pages/Experiences.js           Booking-style activities/experiences page.
-src/pages/Services.js              Traveler services page.
-src/pages/Safety.js                Practical Oaxaca safety advice.
+src/jsx.js                         htm binding used instead of JSX.
+src/App.js                         HashRouter routes and dark-mode html class toggle.
+src/components/Layout.js           Header/nav, language controls, dark toggle, offline banner, Google Maps localization, FloatingLocalGuide.
+src/components/CategoryFilter.js   Category pills; validates selected category and mirrors language to store.
+src/components/PlaceCard.js        Recommendation card, ratings, favorites/add-to-plan, image overrides, translation fallback helpers.
+src/components/FloatingLocalGuide.js Floating AI local guide chat with optional geolocation and Oaxaca prompt context.
+src/components/CapabilityHub.js    Settings/demo hub for GenMB contact, KV notes, DB notes, translation, and map search.
+src/data/places.js                 Curated Oaxaca places/events/services/experiences/day trips and map/link metadata.
+src/data/i18n.js                   Supported languages plus shared/default translation keys.
+src/data/placeLocaleEntries.js     Place-specific localized text overrides.
+src/data/settingsI18n.js           Settings-page translation copy.
+src/i18n.js                        Language hook, locale loading/lookup, fallback behavior.
+src/locales/en.json                English locale bundle.
+src/locales/es.json                Spanish locale bundle.
+src/locales/fr.json                French locale bundle.
+src/locales/de.json                German locale bundle.
+src/locales/it.json                Italian locale bundle.
+src/locales/pt.json                Portuguese locale bundle.
+src/locales/ja.json                Japanese locale bundle.
+src/locales/zh.json                Chinese locale bundle.
+src/pages/Home.js                  Landing/discovery page and compact tabs.
+src/pages/Places.js                Browse/filter curated recommendations.
+src/pages/Itinerary.js             1-day and multi-day planner, saved/downloadable trips, AI guide note.
+src/pages/MapPage.js               Map/search experience and selected stop cards.
+src/pages/Events.js                Oaxaca events listings.
+src/pages/Experiences.js           Booking-style activities with safety/meeting context.
+src/pages/Services.js              Traveler services and practical help.
+src/pages/Safety.js                Safety guidance and local etiquette.
+src/pages/Settings.js              Language/theme/account/capability controls.
 src/pages/Chatbot.js               Full AI guide page and shared `buildSystemPrompt()`.
-src/pages/Settings.js              Language/theme/auth/settings and CapabilityHub.
-src/pages/NotFound.js              Route fallback.
-src/data/places.js                 Static Oaxaca places/events/services/experiences and map helpers.
-src/data/i18n.js                   Supported languages and common translation source text.
-src/data/placeLocaleEntries.js     Per-place localized copy.
-src/data/settingsI18n.js           Settings-page localized copy.
-src/locales/*.json                 Locale bundles for en/es/fr/de/it/pt/ja/zh.
-src/store/useGuideStore.js         Persistent client store for guide state.
-src/utils/itinerary.js             Client itinerary selection/generation helpers.
-src/utils/googleMapsLinks.js       Language-aware Google Maps URL builder/localizer.
-styles/*.css                       App visual system, logo fixes, layout/mobile fixes, home tab compacting.
-CLAUDE.md                          Project guidance; keep in sync with this document.
+src/pages/NotFound.js              Localized fallback route.
+src/store/useGuideStore.js         Persistent client state/actions.
+src/utils/googleMapsLinks.js       URL localization helpers for Google Maps anchors.
+src/utils/itinerary.js             Itinerary generation/scoring/slot utilities.
+styles/main.css                    Theme, cards, glass surfaces, dark mode, focus rings.
+styles/logo-fix.css                Logo-specific fixes.
+styles/layout-improvements.css     Safe-area and responsive layout fixes.
+styles/home-tabs-compact.css       Home tab density overrides.
 ```
 
 ## Key Features
 
-### Multilingual Oaxaca Guide
-- All user-facing navigation, labels, safety, itinerary, settings, chatbot prompts, and place cards should use `useLanguage().t(...)`.
-- Supported language codes: `en`, `es`, `fr`, `de`, `it`, `pt`, `ja`, `zh`.
-- Place cards must use `translatedPlaceField(t, place, field, fallback)` or related helpers from `src/components/PlaceCard.js`; do not inline raw `place.description` unless it is a fallback.
-- If adding a visible place field, update `placeCardVisibleFields` and translations.
+### Multilingual Oaxaca guide
 
-### Curated Recommendations
-- Data source is `src/data/places.js`, not a live Google Places database.
-- Cards include Google Maps directions, rating, price/duration, safety tip, local tip, best time, nearby stops, accessibility/booking notes where available.
-- `CategoryFilter.js` intentionally shows compact priority categories: `food`, `mezcal`, `markets`, `artisan`, `culture`, `nature`, plus `all`; `dayTrips` exists in data but is excluded from the main compact filter.
+- Supported languages are defined in `src/data/i18n.js`: `en`, `es`, `fr`, `de`, `it`, `pt`, `ja`, `zh`.
+- Traveler-facing UI should use `useLanguage().t(key, fallback)` from `src/i18n.js`.
+- Do not hardcode visible English strings unless they are data fallbacks or developer-only labels.
+- Keep `languages[].placeCards = true` unless a language loses place-card coverage.
 
-### Itinerary Generator
-- `src/pages/Itinerary.js` and `src/utils/itinerary.js` generate Oaxaca plans from curated metadata and current store preferences.
-- Required output shape for 1-day plan: morning, afternoon, night.
-- Itinerary state/favorites/saved trips persist via `useGuideStore.js`.
-- Add-to-plan actions should use store actions instead of page-local arrays so the map, saved/offline state, and itinerary page stay in sync.
+### Curated recommendations
 
-### Maps and Directions
-- Place-level directions use Google Maps URLs from `src/data/places.js` / `placeMapLink`.
-- `src/utils/googleMapsLinks.js` adds selected-language parameters.
-- `Layout.js` localizes existing and newly inserted map anchors using a `MutationObserver`; avoid manual duplicate localization unless building a URL directly.
+- Main place data lives in `src/data/places.js`.
+- Primary place categories include food, mezcal, markets, artisan, culture, nature, and day trips. `CategoryFilter.js` intentionally hides `dayTrips` from the compact primary category pills.
+- `PlaceCard.js` requirements:
+  - Show photo, rating, area/address, category, duration/price, description, highlights, local tips, safety tip, opening hours, and Google Maps directions where available.
+  - Allow favorite/save and add-to-itinerary actions through `useGuideStore.js`.
+  - Use `targetedPlaceImageOverrides` first, then curated `place.photo` if present, then `fallbackPlaceImageFor(place)`.
+  - Translation keys use `place.${place.id}.${field}` unless overridden by `place.translationKeys`.
 
-### AI Guide
-- Full chat lives in `src/pages/Chatbot.js`; floating quick chat lives in `src/components/FloatingLocalGuide.js`.
-- `FloatingLocalGuide.js` imports `buildSystemPrompt` from `Chatbot.js`; keep prompt changes centralized where possible.
-- AI must be optional. If `window.genmb.ai` is missing or fails, show localized fallback and keep curated guide usable.
-- Floating guide may use browser geolocation, but denied/unavailable location must gracefully degrade to area-based questions.
+### Itinerary planning
 
-### Settings and GenMB Capability Demos
-- `src/pages/Settings.js` hosts account/language/theme controls and `CapabilityHub`.
-- `src/components/CapabilityHub.js` demonstrates:
-  - `window.genmb.contactForm.submit(contact)`
-  - `window.genmb.kv.list/set/delete(...)` for quick notes
-  - `window.genmb.db.travel_notes.list/create/delete(...)` for signed-in DB notes
-  - `window.genmb.translate` for sample translation
-  - `window.genmb.maps` for live place search
-- These are demos/progressive enhancements; always show helpful unavailable errors rather than hard failures.
+- `src/pages/Itinerary.js` and `src/utils/itinerary.js` support original 1-day generation with morning/afternoon/night slots plus multi-day planning.
+- Itinerary inputs include travel style, starting area, transport preference, pace, budget, walking tolerance, preferred categories, saved must-see places, and trip length.
+- Generated plans should balance category fit, geography, opening practicality, local safety, and not overpack low-walking/relaxed routes.
+- Download/save/offline cues must keep working for guests via local store and for signed-in users where GenMB auth is available.
 
-### Backend / API Surface
-There is no custom app backend in this repo. External APIs are the injected GenMB browser SDKs in `index.html`.
+### AI local guide
 
-Configured/generated database tables include: `userProfiles`, `locales`, `translationNamespaces`, `translationKeys`, `translationValues`, `keyValueEntries`, `recommendationCategories`, `categoryTranslations`, `places`, `placeTranslations`, `tags`, `tagTranslations`, `placeTags`, `safetyAdvice`, `safetyAdviceTranslations`, `savedPlaces`, `itineraries`, `itineraryItems`, `chatSessions`, `chatMessages`, `contactSubmissions`, `adminContactNotes`, and `travel_notes`.
+- `src/pages/Chatbot.js` is the full chat page.
+- `src/components/FloatingLocalGuide.js` is the persistent floating chat.
+- `buildSystemPrompt()` from `Chatbot.js` is reused by the floating guide; keep shared prompt behavior Oaxaca-specific.
+- AI answers must stay focused on Oaxaca recommendations, etiquette, food, transport, maps, itinerary changes, and safety. If AI is unavailable, show curated fallback guidance instead of breaking the UI.
+- Optional geolocation in `FloatingLocalGuide.js` should only be used after user action and must handle denied/unavailable states.
 
-Current app code directly uses only the `travel_notes` table via `window.genmb.db.travel_notes` in `CapabilityHub.js`, plus capability SDKs for auth, KV, contact form, translate, maps, and AI.
+### Map and Google Maps integration
+
+- Each curated place should include enough metadata for maps: name, address/area, `googleMapsUrl` or place link, and coordinates when possible.
+- `src/utils/googleMapsLinks.js` localizes URLs to the selected language.
+- `src/components/Layout.js` mutates Google Maps anchors after render; this is intentional because many links are generated by cards/search results.
+- `src/pages/MapPage.js` should tolerate interactive tile/search failures and still expose selected stop cards and Google Maps links.
+
+### Events, experiences, services, and safety
+
+- `src/pages/Events.js`, `Experiences.js`, `Services.js`, and `Safety.js` render additional structured travel content from `src/data/places.js`.
+- Experiences should feel booking-style: ratings, prices, meeting points, duration, language availability, safety notes, and “check availability” style CTAs.
+- Safety content should remain practical and non-alarmist: registered taxis/ride-hail at night, hydration/sun, market etiquette, mezcal pacing, cash awareness, rain plans, and accessibility.
+
+### GenMB capabilities and data models
+
+Frontend code uses browser SDKs under `window.genmb`; no local backend files exist in this repo. Always feature-detect methods before calling.
+
+Important SDK usages:
+
+- `window.genmb.auth` — sign in/out, user profile, auth state.
+- `window.genmb.contactForm.submit(contact)` — contact submissions from `CapabilityHub.js`.
+- `window.genmb.kv.list/set/delete` — quick guest/user notes using key scope `tutour:memo:{userId|guest}:`.
+- `window.genmb.db.travel_notes` — relational DB travel notes in `CapabilityHub.js`.
+- `window.genmb.translate` — translation helper/demo.
+- `window.genmb.maps` — map/place search helper/demo.
+- AI/chat/text capability is used by `Chatbot.js`, `FloatingLocalGuide.js`, and itinerary guide notes.
+
+Database tables configured externally:
+
+- User/profile/i18n: `userProfiles`, `locales`, `translationNamespaces`, `translationKeys`, `translationValues`.
+- Recommendations: `recommendationCategories`, `categoryTranslations`, `places`, `placeTranslations`, `tags`, `tagTranslations`, `placeTags`, `safetyAdvice`, `safetyAdviceTranslations`.
+- User content: `savedPlaces`, `itineraries`, `itineraryItems`, `chatSessions`, `chatMessages`, `contactSubmissions`, `adminContactNotes`, `travel_notes`.
+- KV backing: `keyValueEntries`.
 
 ## Design Guidelines
 
-- Visual style: polished travel marketplace inspired by GetYourGuide, adapted to Oaxaca with warm orange accents, card-heavy layouts, rounded corners, glass header, bold compact controls, and high-contrast CTA states.
-- Primary theme color is orange (`#f97316` via `theme-color` and CSS variables); use existing CSS variables such as `--primary`, `--accent`, `--card`, `--border`, `--foreground`, `--muted`, `--destructive`.
-- Use Tailwind utility classes plus existing CSS variables; prefer existing card/button patterns from `PlaceCard.js`, `Layout.js`, and `CategoryFilter.js`.
-- Typography is system/Tailwind default with heavy weights for navigation, chips, and CTA labels (`font-black`, `font-bold`).
+- Visual identity: polished Oaxaca tourism style, warm orange accent, cream/card surfaces, glassy sticky header, rounded cards, dense mobile-friendly controls.
+- Theme colors and tokens live in `styles/main.css`; use existing CSS variables such as `--primary`, `--accent`, `--card`, `--border`, `--foreground`, `--muted`, and radius/shadow variables.
+- Tailwind utility classes are used directly in components; custom CSS should only be added when repeated patterns or responsive/safe-area fixes are needed.
+- Preserve `.focus-ring` on interactive elements for accessibility.
+- Header logo uses `logoSvg` in `src/components/Layout.js` pointing to `/api/apps/romcWH54d4SR/assets/TuTournewLogobigger.png`; sizing is controlled by `styles/logo-fix.css` and GenMB visual-edit styles in `index.html`.
 - Responsive behavior:
-  - Desktop uses full header nav.
-  - Mobile uses compact layout and overflow protection from `styles/layout-improvements.css`.
-  - Respect safe-area padding via `safe-bottom`.
-- Logo is an image at `/api/apps/romcWH54d4SR/assets/TuTournewLogobigger.png`; keep sizing controlled by `styles/logo-fix.css`.
+  - Desktop shows centered nav in header.
+  - Smaller screens rely on compact navigation/menu patterns in `Layout.js`.
+  - Keep `overflow-x-hidden`, safe bottom spacing, and viewport-fit behavior to avoid mobile horizontal scrolling/notch issues.
+- Dark mode is class-based on `<html class="dark">`; do not implement a separate theme system.
 
 ## App Flow
 
-- **Browse:** User lands on `/`, chooses category chips, opens `/places`, reviews cards, favorites stops, adds stops to itinerary, or opens Google Maps directions.
-- **Plan:** User opens `/itinerary`, sets travel preferences, generates a 1-day morning/afternoon/night plan, optionally saves/downloads/offline-saves it, and can request an AI guide note.
-- **Map:** User opens `/map`, views curated stops spatially/listed, opens selected stop details and localized Google Maps links. If interactive map tiles fail, the stop card and links remain usable.
-- **Events/Experiences/Services:** Users browse booking-style or practical Oaxaca recommendations from static curated data.
-- **Safety:** Users read practical localized safety advice; safety copy should remain direct and conservative.
-- **AI:** User opens `/chat` or floating chat; if AI is unavailable, they receive fallback guidance and are routed back to curated features.
-- **Settings:** User changes language/theme, signs in if SDK exists, tests optional contact/KV/DB/translate/maps capabilities.
-- **Offline edge case:** `Layout.js` listens to `online/offline`; offline banner appears and saved/offline trips remain accessible from client state.
-- **Unknown route:** `src/pages/NotFound.js` handles all unmatched hash paths.
+1. **Browse**
+   - User lands on `#/`.
+   - `Layout.js` provides language/theme/nav, offline banner, and floating guide.
+   - User can open places, map, events, itinerary, or menu/settings.
+
+2. **Discover a place**
+   - User opens `#/places` or category tabs.
+   - `CategoryFilter.js` updates `useGuideStore.category`.
+   - `PlaceCard.js` displays localized/fallback data, safety/local tips, favorite, add-to-plan, and directions.
+   - Google Maps links are localized globally by `Layout.js`.
+
+3. **Build an itinerary**
+   - User opens `#/itinerary`.
+   - Chooses style, pace, transport, categories, budget, saved must-sees, and day count.
+   - `src/utils/itinerary.js` builds morning/afternoon/night plans.
+   - User can save, download, regenerate, or request an AI guide note.
+
+4. **Use map**
+   - User opens `#/map`.
+   - Searches/explores places and opens Google Maps for selected stops.
+   - If interactive map tiles/search are unavailable, fallback text/cards remain usable.
+
+5. **Ask AI guide**
+   - User opens floating guide or `#/chat`.
+   - Optional location can be saved after permission.
+   - AI responds in selected language using Oaxaca-specific prompt context.
+   - On capability failure, UI shows a localized error/fallback.
+
+6. **Settings/capabilities**
+   - User opens `#/settings`.
+   - Can change language/theme, auth where available, and use `CapabilityHub.js` demos for contact, KV notes, DB notes, translation, and map search.
+   - Edge case: guest KV notes use guest scope; DB notes require signed-in `authUser.id`.
+
+Key edge cases:
+
+- Missing translation: show curated default, not blank text.
+- Unsupported/stale category in store: reset to `all`.
+- Offline: display banner but keep saved/local guide content usable.
+- GenMB capability missing: show localized unavailable message.
+- Google Maps link generated after render: rely on `MutationObserver` localization.
+- Popup/auth failures: leave guest mode functional.
 
 ## Conventions
 
-- Use named exports for components and utilities.
-- Keep components as functions returning `html\`\`` templates; never introduce JSX syntax unless the build pipeline is changed.
-- Add a new page by:
-  1. Creating `src/pages/NewPage.js`.
-  2. Importing it in `src/App.js`.
-  3. Adding a `<Route>` under the `Layout` route.
-  4. Adding nav/menu links in `src/components/Layout.js` only if it is a primary destination.
-  5. Adding locale keys to `src/data/i18n.js` and all `src/locales/*.json` as needed.
-- Add a new place by updating `src/data/places.js`; include stable `id`, category, name, description, area/address, Google Maps URL, and practical travel fields. Add per-place translations in `src/data/placeLocaleEntries.js`.
-- Stable IDs matter: place image overrides, translation keys, saved favorites, and itinerary references depend on place IDs.
-- When adding external/Google Maps links, use helpers from `src/utils/googleMapsLinks.js` or let `Layout.js` localize anchors.
-- Guard every `window.genmb` access. Never make auth, AI, KV, DB, maps, or translate required for core guide functionality.
-- Prefer store actions in `src/store/useGuideStore.js` for shared state; avoid duplicating favorites/itinerary state in pages.
-- Keep `CLAUDE.md` and this project documentation synchronized when architecture, routes, capabilities, or data conventions change.
+- Use named exports for components: `export function Places() { ... }`.
+- Components must import `html` from `../jsx.js` or `./jsx.js`; do not introduce JSX syntax unless the build pipeline is changed.
+- Translation:
+  - UI copy: add keys to `src/data/i18n.js` and/or `src/locales/*.json`.
+  - Settings copy: update `src/data/settingsI18n.js`.
+  - Place copy: update `src/data/places.js` fallbacks and `src/data/placeLocaleEntries.js` or locale bundles.
+  - Always pass a fallback for new non-critical copy: `t('newKey', 'Readable fallback')`.
+- Place IDs should be stable kebab-case; translation keys and image override maps depend on them.
+- Add a new page:
+  1. Create `src/pages/NewPage.js` returning `html`.
+  2. Import it in `src/App.js`.
+  3. Add a `Route` under the `Layout` route.
+  4. Add navigation in `src/components/Layout.js` if it is a primary destination.
+  5. Add locale keys for labels.
+- Add a new recommendation:
+  1. Add the item to `src/data/places.js` with stable `id`, category, area/address, coordinates if known, Google Maps URL, safety/local tips, duration/price/rating, and image if available.
+  2. Add localized fields to `src/data/placeLocaleEntries.js` or locale bundles.
+  3. Add targeted image override in `PlaceCard.js` only when a reliable asset/Google image exists.
+  4. Verify it appears in `Places`, `MapPage`, and itinerary generation.
+- Styling convention: prefer Tailwind utilities using existing theme variables. Add CSS only to the relevant stylesheet by concern.
+- Keep all generated/visual-edit comments in `index.html` unless intentionally replacing the affected asset/layout.
 
 ## Platform (GenMB)
 

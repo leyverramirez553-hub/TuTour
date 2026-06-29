@@ -1,8 +1,15 @@
 export const itineraryNightBlockedIds = new Set(['jardin-etnobotanico', 'museo-culturas', 'textile-museum', 'vida-nueva-cooperative', 'alfareria-dona-rosa', 'jacobo-maria-angeles', 'parador-turistico-real-matlatl-mezcaleria', 'taller-manos-magicas', 'alebrijes-oaxaca-magico']);
 export const itineraryMorningOnlyIds = new Set(['hierve-el-agua', 'memelas-dona-vale', 'itani']);
 export const itineraryArchaeologicalIds = new Set(['monte-alban', 'mitla', 'yacula']);
+export const itineraryCentroNightAreas = ['Centro', 'Centro Histórico', 'Santo Domingo', 'Centro Norte', 'Jalatlaco', 'Xochimilco', 'El Llano'];
 export const isNightBlockedItineraryPlace = (place) => place && itineraryNightBlockedIds.has(place.id);
 export const isItineraryArchaeologicalSite = (place) => place && (itineraryArchaeologicalIds.has(place.id) || /arqueol[óo]gica|archaeological|archaeology|ruins|ancient|zapotec.*city/i.test(`${place.name || ''} ${place.bestFor || ''} ${place.localTip || ''}`));
+export const isMezcalItineraryPlace = (place) => Boolean(place && (place.category === 'mezcal' || /mezcaloteca|mezcaler[íi]a|mezcaleria|\bmezcal\b/i.test(`${place.id || ''} ${place.name || ''}`)));
+export const isCloseToOaxacaCentro = (place) => {
+  if (!place) return false;
+  const areaText = `${place.neighborhood || ''} ${place.area || ''} ${place.address || ''} ${place.maps || ''}`;
+  return itineraryCentroNightAreas.some(area => areaText.toLowerCase().includes(area.toLowerCase())) || /\bcentro\b|santo domingo|z[oó]calo|andador|jalatlaco|xochimilco|el llano/i.test(areaText);
+};
 export const isMarketOrInsideMarketItineraryPlace = (place) => {
   if (!place) return false;
   if (place.category === 'markets' || itineraryMorningOnlyIds.has(place.id)) return true;
@@ -12,7 +19,8 @@ export const isMarketOrInsideMarketItineraryPlace = (place) => {
 };
 export const isSlotAllowedForItineraryPlace = (place, slot) => {
   if (!place) return false;
-  if (itineraryMorningOnlyIds.has(place.id)) return slot === 'morning';
+  if (isMezcalItineraryPlace(place)) return slot === 'afternoon' || (slot === 'night' && isCloseToOaxacaCentro(place));
+  if (itineraryMorningOnlyIds.has(place.id) || place.category === 'nature') return slot === 'morning';
   if (slot === 'night' && isNightBlockedItineraryPlace(place)) return false;
   if (slot !== 'morning' && (isMarketOrInsideMarketItineraryPlace(place) || isItineraryArchaeologicalSite(place))) return false;
   return true;
@@ -47,10 +55,10 @@ export function generateItinerary(places, options = {}) {
     'jacobo-maria-angeles': { allowed: ['morning', 'afternoon'], note: ' Jacobo & María Ángeles closes in the afternoon, so it is intentionally kept out of night plans. Visit in the morning or afternoon and confirm current Google Maps hours before leaving.' },
     'taller-manos-magicas': { allowed: ['morning', 'afternoon'], note: ' Taller Manos Mágicas closes in the afternoon, so it is intentionally kept out of night plans. Visit earlier in the day and confirm current Google Maps hours before leaving.' },
     'alebrijes-oaxaca-magico': { allowed: ['morning', 'afternoon'], note: ' Alebrijes Oaxaca Mágico closes in the afternoon, so it is intentionally kept out of night plans. Visit earlier in the day and confirm current Google Maps hours before leaving.' },
-    'parador-turistico-real-matlatl-mezcaleria': { allowed: ['morning', 'afternoon'], note: ' Parador Turístico Real Matlatl Mezcalería closes in the afternoon, so it is intentionally kept out of night plans. Visit earlier in the day, confirm current Google Maps hours before leaving, and arrange a sober return driver.' },
+    'parador-turistico-real-matlatl-mezcaleria': { allowed: ['afternoon'], note: ' Parador Turístico Real Matlatl Mezcalería involves alcohol and sits outside Oaxaca Centro, so it is scheduled in the afternoon only. Eat first, confirm current Google Maps hours before leaving, and arrange a sober return driver.' },
     'teatro-macedonio': { allowed: ['morning', 'afternoon', 'night'], note: ' For Teatro Macedonio Alcalá, only use night if there is a confirmed performance or posted opening on Google Maps.' }
   };
-  const removeUnsafeTimeCategories = (cats, slot) => slot === 'morning' ? cats : cats.filter(c => c !== 'markets');
+  const removeUnsafeTimeCategories = (cats, slot) => slot === 'morning' ? cats : cats.filter(c => c !== 'markets' && c !== 'nature');
   const slots = baseSlots.map((cats, index) => {
     const slot = slotNames[index] || 'morning';
     const combined = preferred ? [...new Set([...cats.filter(c => preferred.includes(c)), ...preferred, ...cats])] : cats;
@@ -61,7 +69,7 @@ export function generateItinerary(places, options = {}) {
   const used = new Set(options.usedIds || []);
   const budgetRank = { low: 1, mid: 2, high: 3, luxury: 4 };
   const priceRank = { 'Free': 0, '$': 1, '$$': 2, '$$$': 3 };
-  const centralAreas = ['Centro', 'Santo Domingo', 'Centro Histórico', 'Centro Norte', 'Jalatlaco', 'Xochimilco', 'El Llano', 'Coast'];
+  const centralAreas = [...itineraryCentroNightAreas, 'Coast'];
   const fitsBudget = (p) => budget === 'luxury' || (priceRank[p.price] || 2) <= (budgetRank[budget] || 2);
   const fitsWalk = (p) => walking !== 'low' || (centralAreas.includes(p.neighborhood) && !['dayTrips', 'mezcal'].includes(p.category));
   const fitsRoute = (p) => options.transport !== 'walking' || centralAreas.includes(p.neighborhood);
@@ -86,6 +94,8 @@ export function generateItinerary(places, options = {}) {
   const transport = options.transport === 'walking' ? 'walking only among nearby Centro stops' : options.transport === 'taxi' ? 'using registered taxis between areas' : 'mixing walkable streets with taxis for longer hops';
   const start = options.startLocation || 'Centro';
   const timingNote = (place, slot) => {
+    if (isMezcalItineraryPlace(place)) return slot === 'night' ? ' Mezcal stops involve alcohol; this one is allowed at night only because it is close to Oaxaca Centro. Eat first, hydrate, keep the tasting short, and use a well-lit walk or registered taxi afterward.' : ' Mezcal stops involve alcohol, so TuTour schedules them in the afternoon by default. Eat first, hydrate between tastings, do not drive afterward, and keep a clear return plan.';
+    if (place.category === 'nature' && slot === 'morning') return ` Nature stops are scheduled only in the morning because Oaxaca afternoons can be harshly hot and nature routes are often farther from Centro.${visitorHourRules[place.id] && visitorHourRules[place.id].note ? visitorHourRules[place.id].note : ''}`;
     if (visitorHourRules[place.id] && visitorHourRules[place.id].note) return visitorHourRules[place.id].note;
     if (isMarketOrInsideMarketItineraryPlace(place) && slot === 'morning') return ' Markets and in-market food stands, including Memelas Doña Vale, are placed only in the morning because many Oaxaca markets close or become less advisable later in the day.';
     if (isItineraryArchaeologicalSite(place) && slot === 'morning') return ' Archaeological sites are scheduled in the morning only because they close later in the day and the midday/afternoon heat can be a factor.';
@@ -94,8 +104,8 @@ export function generateItinerary(places, options = {}) {
   const why = (place, slot) => `Selected for your ${pace} pace, ${budget} budget, ${walking} walking tolerance, ${transport}, and ${style} focus; ${mustSee.includes(place.id) ? 'it is one of your must-see saved places and ' : ''}${place.name} fits the ${slot} with ${place.bestFor}.${timingNote(place, slot)}`;
   return [
     { slot: 'morning', place: pick(inCats(slots[0], 'morning'), 0, 'morning'), note: `Start from ${start}; this plan begins with the shortest practical hop and ${transport}.`, reason: '' },
-    { slot: 'afternoon', place: pick(inCats(slots[1], 'afternoon'), 5, 'afternoon'), note: `Keep the afternoon realistic: hydrate, avoid markets, in-market food stands, archaeological sites in late-day heat, cross-valley backtracking, and check last-entry windows. Use ${transport} as needed.`, reason: '' },
-    { slot: 'night', place: pick(inCats(slots[2], 'night'), 11, 'night'), note: `End with an easy return plan: ${transport}, well-lit streets, confirmed current hours on Google Maps, and no markets, in-market food stands, archaeological sites, or last-entry garden/artisan workshop stops at night.`, reason: '' }
+    { slot: 'afternoon', place: pick(inCats(slots[1], 'afternoon'), 5, 'afternoon'), note: `Keep the afternoon realistic: hydrate, avoid nature routes, markets, in-market food stands, archaeological sites in late-day heat, cross-valley backtracking, and check last-entry windows. Use ${transport} as needed.`, reason: '' },
+    { slot: 'night', place: pick(inCats(slots[2], 'night'), 11, 'night'), note: `End with an easy return plan: ${transport}, well-lit streets, confirmed current hours on Google Maps, and no nature routes, markets, in-market food stands, archaeological sites, or last-entry garden/artisan workshop stops at night.`, reason: '' }
   ].map(item => ({ ...item, reason: item.place ? why(item.place, item.slot) : 'No safe, open stop matched this time slot. Adjust your filters or choose a different travel style.' }));
 }
 

@@ -1,14 +1,22 @@
 import React from 'react';
-import {Car, Heart, Loader2, MapPin, Navigation, PlusCircle, Route, Sparkles} from 'lucide-react';
+import {Car, Loader2, MapPin, PlusCircle, Route, Sparkles} from 'lucide-react';
 import { html } from '../jsx.js';
 import { places, placeMapLink, requestedMapLink } from '../data/places.js';
+import { PlaceCard } from '../components/PlaceCard.js';
 import { useGuideStore } from '../store/useGuideStore.js';
 import { t } from '../data/i18n.js';
 import { localizedGoogleMapsUrl } from '../utils/googleMapsLinks.js';
+import { isCloseToOaxacaCentro, isMezcalItineraryPlace } from '../utils/itinerary.js';
+import { placeForPlacesPage, placesPageAdditionalCards, removedPlaceCardIds } from './Places.js';
 
 export let leafletPromise = null;
-export const mapPlaces = places.filter(place => place.category !== 'coast');
-export const mapHeroImage = 'https://lh3.googleusercontent.com/gps-cs-s/APNQkAHSg0IyphFN-vBNFNYs7b_jf_28jOTgJQQsU9m-fb79q6wvW87FezijtrPFefJvFLln0cL88VZiNiIEYsMTihRCk_L_Pc56DGNXJOJTHtxGqjjmnoYnw-haBBjcI3DD3RMYUA4U=w1200-h900-k-no';
+export const mapPlaces = [...places, ...placesPageAdditionalCards].reduce((list, place) => {
+  const displayPlace = placeForPlacesPage(place);
+  if (!place || !displayPlace || removedPlaceCardIds.includes(place.id) || removedPlaceCardIds.includes(displayPlace.id) || displayPlace.category === 'coast') return list;
+  list.push(displayPlace);
+  return list;
+}, []);
+export const mapHeroImage = '/api/apps/romcWH54d4SR/assets/TuTourMapbackground.jpg';
 
 export function loadLeaflet() {
   leafletPromise = leafletPromise || Promise.resolve(null);
@@ -24,6 +32,7 @@ export const morningOnlyIds = new Set(['hierve-el-agua']);
 export const nightBlockedIds = new Set(['jardin-etnobotanico', 'museo-culturas', 'textile-museum', 'vida-nueva-cooperative', 'alfareria-dona-rosa', 'jacobo-maria-angeles', 'parador-turistico-real-matlatl-mezcaleria', 'taller-manos-magicas', 'alebrijes-oaxaca-magico']);
 export const isArchaeologicalSite = (place) => archaeologicalIds.has(place.id) || /arqueol[óo]gica|archaeological|archaeology|ruins|ancient|zapotec.*city/i.test(`${place.name} ${place.bestFor} ${place.localTip}`);
 export const slotAllowedForMapAdd = (place, slot) => {
+  if (isMezcalItineraryPlace(place)) return slot === 'afternoon' || (slot === 'night' && isCloseToOaxacaCentro(place));
   if (morningOnlyIds.has(place.id)) return slot === 'morning';
   if (isArchaeologicalSite(place)) return slot === 'morning';
   if (nightBlockedIds.has(place.id)) return slot !== 'night';
@@ -51,7 +60,7 @@ export function popupContent(place, lang, onSelect) {
   return wrap;
 }
 
-export function GoogleStopsMap({ lang, userLocation, selectedId, onSelect, onReady, onError }) {
+export function GoogleStopsMap({ lang, userLocation, selectedId, onSelect, onReady, onError, places: placesForMap = mapPlaces }) {
   const generatedId = React.useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const elementId = `tutour-google-map-${generatedId}`;
   const mapRef = React.useRef(null);
@@ -64,7 +73,9 @@ export function GoogleStopsMap({ lang, userLocation, selectedId, onSelect, onRea
           throw new Error(t(lang, 'mapTilesUnavailable'));
         }
         const center = hasValidCoords(userLocation) ? { lat: Number(userLocation.lat), lng: Number(userLocation.lng) } : { lat: 17.061, lng: -96.724 };
-        const markers = mapPlaces.filter(hasValidCoords).map(place => ({
+        const visiblePlaces = placesForMap.filter(hasValidCoords);
+        const markerPlaces = visiblePlaces.slice();
+        const markers = visiblePlaces.map(place => ({
           lat: Number(place.lat),
           lng: Number(place.lng),
           title: place.name,
@@ -72,9 +83,19 @@ export function GoogleStopsMap({ lang, userLocation, selectedId, onSelect, onRea
         }));
         if (hasValidCoords(userLocation)) {
           markers.unshift({ lat: Number(userLocation.lat), lng: Number(userLocation.lng), title: t(lang, 'mapSavedLocation'), label: '📍' });
+          markerPlaces.unshift(null);
         }
         const map = await window.genmb.maps.render(elementId, { center, zoom: userLocation ? 14 : 12, markers });
         if (cancelled) return;
+        const renderedMarkers = Array.isArray(map && map.markers) ? map.markers : [];
+        renderedMarkers.forEach((marker, index) => {
+          const place = markerPlaces[index];
+          if (!place || !marker) return;
+          try {
+            if (typeof marker.addListener === 'function') marker.addListener('click', () => onSelect && onSelect(place));
+            else if (typeof marker.on === 'function') marker.on('click', () => onSelect && onSelect(place));
+          } catch (err) {}
+        });
         mapRef.current = map;
         onReady && onReady('google');
       } catch (err) {
@@ -89,25 +110,26 @@ export function GoogleStopsMap({ lang, userLocation, selectedId, onSelect, onRea
       }
       mapRef.current = null;
     };
-  }, [elementId, lang, userLocation]);
+  }, [elementId, lang, userLocation, placesForMap]);
 
   return html`<div className="relative h-full w-full">
     <div id=${elementId} className="h-full w-full" role="application" aria-label=${`${t(lang, 'map')} Google Maps Oaxaca`}></div>
-    ${selectedId ? html`<div className="pointer-events-none absolute left-2 top-2 max-w-[75%] rounded-full bg-[hsl(var(--card)/0.92)] px-3 py-1 text-[11px] font-black text-[hsl(var(--foreground))] shadow-[var(--shadow-sm)] backdrop-blur">Google Maps · ${mapPlaces.find(place => place.id === selectedId)?.name || 'Oaxaca'}</div>` : null}
+    ${selectedId ? html`<div className="pointer-events-none absolute left-2 top-2 max-w-[75%] rounded-full bg-[hsl(var(--card)/0.92)] px-3 py-1 text-[11px] font-black text-[hsl(var(--foreground))] shadow-[var(--shadow-sm)] backdrop-blur">Google Maps · ${placesForMap.find(place => place.id === selectedId)?.name || 'Oaxaca'}</div>` : null}
   </div>`;
 }
 
 export const LeafletStopsMap = GoogleStopsMap;
 
-export function SelectedPlaceCard({ place, lang, favorites, toggleFavorite, addToItinerary, userLocation }) {
-  const [imgError, setImgError] = React.useState(false);
-  React.useEffect(() => { setImgError(false); }, [place && place.id]);
+export function SelectedPlaceCard({ place, lang, addToItinerary, userLocation }) {
   if (!place) return html`<div className="rounded-[var(--radius-lg)] border border-dashed border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3 text-xs font-bold text-[hsl(var(--muted-foreground))]">${t(lang, 'mapIntro')}</div>`;
-  const favorite = favorites.includes(place.id);
-  return html`<article className="grid gap-2 rounded-[var(--radius-lg)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3 shadow-[var(--shadow-sm)]">
-    <div className="flex items-start gap-2.5">${place.image && !imgError ? html`<img src=${place.image} alt=${place.name} className="h-16 w-20 rounded-[var(--radius-md)] object-cover" onError=${() => setImgError(true)} referrerPolicy="no-referrer-when-downgrade" />` : html`<div className="grid h-16 w-20 shrink-0 place-items-center rounded-[var(--radius-md)] bg-[hsl(var(--muted))] text-xl">${(categoryMeta[place.category] && categoryMeta[place.category].icon) || place.emoji || '📍'}</div>`}<div className="min-w-0"><h2 className="truncate text-base font-black">${place.name}</h2><p className="text-xs font-bold text-[hsl(var(--muted-foreground))]">${t(lang, place.category)} · ★ ${place.rating} · ${place.area}</p><p className="mt-1 line-clamp-2 text-xs">${place.safetyTip}</p></div></div>
-    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4"><a href=${directionsHref(place, 'walking', userLocation, lang)} target="_blank" rel="noreferrer" className="focus-ring inline-flex items-center justify-center gap-1 rounded-[var(--radius-md)] bg-[hsl(var(--primary))] px-2 py-1.5 text-[11px] font-black text-[hsl(var(--primary-foreground))]"><${Route} className="h-3 w-3" />${t(lang, 'walk')}</a><a href=${directionsHref(place, 'driving', userLocation, lang)} target="_blank" rel="noreferrer" className="focus-ring inline-flex items-center justify-center gap-1 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-2 py-1.5 text-[11px] font-black"><${Car} className="h-3 w-3" />${t(lang, 'drive')}</a><button onClick=${() => addToItinerary(place)} className="focus-ring inline-flex items-center justify-center gap-1 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-2 py-1.5 text-[11px] font-black"><${PlusCircle} className="h-3 w-3" />${t(lang, 'addToPlan')}</button><button onClick=${() => toggleFavorite(place.id)} className="focus-ring rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-2 py-1.5 text-[11px] font-black" aria-label=${`${t(lang, 'saved')}: ${place.name}`}><${Heart} className=${`inline h-3 w-3 ${favorite ? 'fill-current text-[hsl(var(--destructive))]' : ''}`} /> ${favorite ? t(lang, 'saved') : t(lang, 'save')}</button></div>
-  </article>`;
+  return html`<div className="grid gap-2" aria-live="polite">
+    <${PlaceCard} place=${place} />
+    <div className="grid grid-cols-3 gap-1.5 rounded-[var(--radius-lg)] border border-[hsl(var(--border))] bg-[hsl(var(--card)/0.82)] p-2 shadow-[var(--shadow-sm)]">
+      <a href=${directionsHref(place, 'walking', userLocation, lang)} target="_blank" rel="noreferrer" className="focus-ring inline-flex items-center justify-center gap-1 rounded-[var(--radius-md)] bg-[hsl(var(--primary))] px-2 py-1.5 text-[11px] font-black text-[hsl(var(--primary-foreground))]"><${Route} className="h-3 w-3" />${t(lang, 'walk')}</a>
+      <a href=${directionsHref(place, 'driving', userLocation, lang)} target="_blank" rel="noreferrer" className="focus-ring inline-flex items-center justify-center gap-1 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-2 py-1.5 text-[11px] font-black"><${Car} className="h-3 w-3" />${t(lang, 'drive')}</a>
+      <button type="button" onClick=${() => addToItinerary(place)} className="focus-ring inline-flex items-center justify-center gap-1 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-2 py-1.5 text-[11px] font-black"><${PlusCircle} className="h-3 w-3" />${t(lang, 'addToPlan')}</button>
+    </div>
+  </div>`;
 }
 
 export function MapPage() {
@@ -116,6 +138,7 @@ export function MapPage() {
   const [message, setMessage] = React.useState('');
   const [added, setAdded] = React.useState('');
   const [selected, setSelected] = React.useState(mapPlaces.find(hasValidCoords) || mapPlaces[0] || null);
+  const selectedPlace = selected && mapPlaces.find(place => place.id === selected.id) ? selected : (mapPlaces.find(hasValidCoords) || mapPlaces[0] || null);
 
   const addToItinerary = React.useCallback((place) => {
     const slots = ['morning', 'afternoon', 'night'];
@@ -137,7 +160,6 @@ export function MapPage() {
         <div className="map-wave" aria-hidden="true"><span>~</span><span>~</span><span>~</span><span>~</span><span>~</span><span>~</span><span>~</span><span>~</span></div>
         <p>${t(lang, 'mapIntro')}</p>
         <div className="map-hero-pills"><span><${Sparkles} className="h-3.5 w-3.5" />${mapPlaces.length} ${t(lang, 'stopCount')}</span><span>Google Maps</span><span>${userLocation ? t(lang, 'mapSavedLocation') : t(lang, 'mapLiveLinks')}</span></div>
-        <a href=${requestedMapHref(lang)} target="_blank" rel="noreferrer" className="focus-ring map-hero-cta"><${Navigation} className="h-5 w-5" />${t(lang, 'openMap')}</a>
       </div>
     </section>
 
@@ -147,12 +169,12 @@ export function MapPage() {
       ${added ? html`<p className="mx-3 mb-2 rounded-[var(--radius-md)] bg-[hsl(var(--secondary)/0.12)] p-2 text-xs font-bold text-[hsl(var(--secondary))]">${added}</p>` : null}
       <div className="grid gap-2 px-3 pb-3 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="relative h-[28vh] min-h-[180px] max-h-[300px] w-full overflow-hidden rounded-[var(--radius-lg)] bg-[hsl(var(--muted))] md:h-[32vh] md:min-h-[220px]">
-          <${GoogleStopsMap} lang=${lang} userLocation=${userLocation} selectedId=${selected && selected.id} onSelect=${setSelected} onReady=${() => { setStatus('ready'); setMessage(''); }} onError=${handleMapError} />
+          <${GoogleStopsMap} lang=${lang} userLocation=${userLocation} selectedId=${selectedPlace && selectedPlace.id} onSelect=${setSelected} onReady=${() => { setStatus('ready'); setMessage(''); }} onError=${handleMapError} places=${mapPlaces} />
           ${status === 'loading' ? html`<div className="absolute inset-0 z-10 grid place-items-center bg-[hsl(var(--card)/0.72)]"><span className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--card))] px-4 py-2 text-sm font-black shadow-[var(--shadow-sm)]"><${Loader2} className="h-4 w-4 animate-spin" />${t(lang, 'loading')}</span></div>` : null}
         </div>
-        <${SelectedPlaceCard} place=${selected} lang=${lang} favorites=${favorites} toggleFavorite=${toggleFavorite} addToItinerary=${addToItinerary} userLocation=${userLocation} />
+        <${SelectedPlaceCard} place=${selectedPlace} lang=${lang} favorites=${favorites} toggleFavorite=${toggleFavorite} addToItinerary=${addToItinerary} userLocation=${userLocation} />
       </div>
-      <div className="grid gap-2 border-t border-[hsl(var(--border))] p-2.5 sm:flex sm:items-center sm:justify-between"><p className="text-[11px] font-bold text-[hsl(var(--muted-foreground))]">${mapPlaces.length} ${t(lang, 'stopCount')} · Google Maps · ${userLocation ? t(lang, 'mapSavedLocation') : 'Oaxaca, México'}</p><a href=${requestedMapHref(lang)} target="_blank" rel="noreferrer" className="focus-ring inline-flex min-h-[32px] items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[hsl(var(--primary))] px-3 py-1.5 text-xs font-black text-[hsl(var(--primary-foreground))]"><${Navigation} className="h-3.5 w-3.5" />${t(lang, 'openMap')}</a></div>
+      <div className="grid gap-2 border-t border-[hsl(var(--border))] p-2.5 sm:flex sm:items-center sm:justify-between"><p className="text-[11px] font-bold text-[hsl(var(--muted-foreground))]">${mapPlaces.length} ${t(lang, 'stopCount')} · Google Maps · ${userLocation ? t(lang, 'mapSavedLocation') : 'Oaxaca, México'}</p></div>
     </section>
   </div>`;
 }

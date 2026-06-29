@@ -8,21 +8,21 @@ import { buildSystemPrompt } from '../pages/Chatbot.js';
 
 const floatingGuideCopy = {
   en: {
-    label: 'Open AI local guide chat', title: 'AI local guide', subtitle: 'Oaxaca-focused help in your language', input: 'Ask about Oaxaca food, safety, etiquette, or places...', empty: 'Ask me about Oaxaca.', intro: 'I can recommend nearby stops, explain etiquette, suggest food, and share practical safety advice.', useLocation: 'Use my location', locationSaved: 'Location saved. Ask what is nearby.', locationDenied: 'Location permission was denied. You can still ask about an area like Centro, Jalatlaco, or Reforma.', locationUnavailable: 'Location is not available on this device or browser.', send: 'Send', close: 'Close chat', thinking: 'TuTour is thinking...', error: 'The AI guide could not reply. Please try again.', unavailable: 'AI chatbot is not available right now.', nearby: 'What is near me right now?', food: 'Recommend local food near Centro', etiquette: 'Explain Oaxaca cultural etiquette', safety: 'What should I avoid at night?' },
+    label: 'Open AI local guide chat', askTab: 'Ask AI guide', title: 'AI local guide', subtitle: 'Oaxaca-focused help in your language', input: 'Ask about Oaxaca food, safety, etiquette, or places...', empty: 'Ask me about Oaxaca.', intro: 'I can recommend nearby stops, explain etiquette, suggest food, and share practical safety advice.', useLocation: 'Use my location', locationSaved: 'Location saved. Ask what is nearby.', locationDenied: 'Location permission was denied. You can still ask about an area like Centro, Jalatlaco, or Reforma.', locationUnavailable: 'Location is not available on this device or browser.', send: 'Send', close: 'Close chat', thinking: 'TuTour is thinking...', error: 'The AI guide could not reply. Please try again.', unavailable: 'AI chatbot is not available right now.', nearby: 'What is near me right now?', food: 'Recommend local food near Centro', etiquette: 'Explain Oaxaca cultural etiquette', safety: 'What should I avoid at night?' },
   es: {
-    label: 'Abrir chat de guía local IA', title: 'Guía local IA', subtitle: 'Ayuda enfocada en Oaxaca en tu idioma', input: 'Pregunta sobre comida, seguridad, etiqueta o lugares de Oaxaca...', empty: 'Pregúntame sobre Oaxaca.', intro: 'Puedo recomendar paradas cercanas, explicar etiqueta, sugerir comida y dar consejos prácticos de seguridad.', useLocation: 'Usar mi ubicación', locationSaved: 'Ubicación guardada. Pregunta qué hay cerca.', locationDenied: 'Se denegó el permiso de ubicación. Aun así puedes preguntar por una zona como Centro, Jalatlaco o Reforma.', locationUnavailable: 'La ubicación no está disponible en este dispositivo o navegador.', send: 'Enviar', close: 'Cerrar chat', thinking: 'TuTour está pensando...', error: 'La guía IA no pudo responder. Inténtalo de nuevo.', unavailable: 'El chatbot IA no está disponible ahora.', nearby: '¿Qué hay cerca de mí ahora?', food: 'Recomienda comida local cerca del Centro', etiquette: 'Explica la etiqueta cultural de Oaxaca', safety: '¿Qué debo evitar de noche?' },
+    label: 'Abrir chat de guía local IA', askTab: 'Preguntar al guía IA', title: 'Guía local IA', subtitle: 'Ayuda enfocada en Oaxaca en tu idioma', input: 'Pregunta sobre comida, seguridad, etiqueta o lugares de Oaxaca...', empty: 'Pregúntame sobre Oaxaca.', intro: 'Puedo recomendar paradas cercanas, explicar etiqueta, sugerir comida y dar consejos prácticos de seguridad.', useLocation: 'Usar mi ubicación', locationSaved: 'Ubicación guardada. Pregunta qué hay cerca.', locationDenied: 'Se denegó el permiso de ubicación. Aun así puedes preguntar por una zona como Centro, Jalatlaco o Reforma.', locationUnavailable: 'La ubicación no está disponible en este dispositivo o navegador.', send: 'Enviar', close: 'Cerrar chat', thinking: 'TuTour está pensando...', error: 'La guía IA no pudo responder. Inténtalo de nuevo.', unavailable: 'El chatbot IA no está disponible ahora.', nearby: '¿Qué hay cerca de mí ahora?', food: 'Recomienda comida local cerca del Centro', etiquette: 'Explica la etiqueta cultural de Oaxaca', safety: '¿Qué debo evitar de noche?' },
   fr: {
-    label: 'Ouvrir le chat du guide local IA', title: 'Guide local IA', subtitle: 'Aide centrée sur Oaxaca dans votre langue', input: 'Demandez cuisine, sécurité, étiquette ou lieux à Oaxaca...', empty: 'Posez-moi une question sur Oaxaca.', intro: 'Je peux recommander des lieux proches, expliquer l’étiquette, suggérer où manger et donner des conseils de sécurité.', useLocation: 'Utiliser ma position', locationSaved: 'Position enregistrée. Demandez ce qui est proche.', locationDenied: 'L’autorisation de localisation a été refusée. Vous pouvez demander une zone comme Centro, Jalatlaco ou Reforma.', locationUnavailable: 'La localisation n’est pas disponible sur cet appareil ou navigateur.', send: 'Envoyer', close: 'Fermer le chat', thinking: 'TuTour réfléchit...', error: 'Le guide IA n’a pas pu répondre. Réessayez.', unavailable: 'Le chatbot IA n’est pas disponible pour le moment.', nearby: 'Qu’y a-t-il près de moi maintenant ?', food: 'Recommande de la cuisine locale près du Centro', etiquette: 'Explique l’étiquette culturelle à Oaxaca', safety: 'Que faut-il éviter la nuit ?' },
+    label: 'Ouvrir le chat du guide local IA', askTab: 'Demander au guide IA', title: 'Guide local IA', subtitle: 'Aide centrée sur Oaxaca dans votre langue', input: 'Demandez cuisine, sécurité, étiquette ou lieux à Oaxaca...', empty: 'Posez-moi une question sur Oaxaca.', intro: 'Je peux recommander des lieux proches, expliquer l’étiquette, suggérer où manger et donner des conseils de sécurité.', useLocation: 'Utiliser ma position', locationSaved: 'Position enregistrée. Demandez ce qui est proche.', locationDenied: 'L’autorisation de localisation a été refusée. Vous pouvez demander une zone comme Centro, Jalatlaco ou Reforma.', locationUnavailable: 'La localisation n’est pas disponible sur cet appareil ou navigateur.', send: 'Envoyer', close: 'Fermer le chat', thinking: 'TuTour réfléchit...', error: 'Le guide IA n’a pas pu répondre. Réessayez.', unavailable: 'Le chatbot IA n’est pas disponible pour le moment.', nearby: 'Qu’y a-t-il près de moi maintenant ?', food: 'Recommande de la cuisine locale près du Centro', etiquette: 'Explique l’étiquette culturelle à Oaxaca', safety: 'Que faut-il éviter la nuit ?' },
   de: {
-    label: 'KI-Ortsguide-Chat öffnen', title: 'KI-Ortsguide', subtitle: 'Oaxaca-Hilfe in deiner Sprache', input: 'Frage zu Essen, Sicherheit, Etikette oder Orten in Oaxaca...', empty: 'Frag mich etwas über Oaxaca.', intro: 'Ich kann nahe Stopps empfehlen, Etikette erklären, Essen vorschlagen und praktische Sicherheitstipps geben.', useLocation: 'Standort nutzen', locationSaved: 'Standort gespeichert. Frag, was in der Nähe ist.', locationDenied: 'Standortberechtigung wurde abgelehnt. Du kannst trotzdem nach Centro, Jalatlaco oder Reforma fragen.', locationUnavailable: 'Standort ist auf diesem Gerät oder Browser nicht verfügbar.', send: 'Senden', close: 'Chat schließen', thinking: 'TuTour denkt nach...', error: 'Der KI-Guide konnte nicht antworten. Bitte erneut versuchen.', unavailable: 'Der KI-Chatbot ist derzeit nicht verfügbar.', nearby: 'Was ist gerade in meiner Nähe?', food: 'Empfiehl lokales Essen nahe Centro', etiquette: 'Erkläre kulturelle Etikette in Oaxaca', safety: 'Was sollte ich nachts vermeiden?' },
+    label: 'KI-Ortsguide-Chat öffnen', askTab: 'KI-Guide fragen', title: 'KI-Ortsguide', subtitle: 'Oaxaca-Hilfe in deiner Sprache', input: 'Frage zu Essen, Sicherheit, Etikette oder Orten in Oaxaca...', empty: 'Frag mich etwas über Oaxaca.', intro: 'Ich kann nahe Stopps empfehlen, Etikette erklären, Essen vorschlagen und praktische Sicherheitstipps geben.', useLocation: 'Standort nutzen', locationSaved: 'Standort gespeichert. Frag, was in der Nähe ist.', locationDenied: 'Standortberechtigung wurde abgelehnt. Du kannst trotzdem nach Centro, Jalatlaco oder Reforma fragen.', locationUnavailable: 'Standort ist auf diesem Gerät oder Browser nicht verfügbar.', send: 'Senden', close: 'Chat schließen', thinking: 'TuTour denkt nach...', error: 'Der KI-Guide konnte nicht antworten. Bitte erneut versuchen.', unavailable: 'Der KI-Chatbot ist derzeit nicht verfügbar.', nearby: 'Was ist gerade in meiner Nähe?', food: 'Empfiehl lokales Essen nahe Centro', etiquette: 'Erkläre kulturelle Etikette in Oaxaca', safety: 'Was sollte ich nachts vermeiden?' },
   it: {
-    label: 'Apri chat guida locale IA', title: 'Guida locale IA', subtitle: 'Aiuto su Oaxaca nella tua lingua', input: 'Chiedi di cibo, sicurezza, etichetta o luoghi a Oaxaca...', empty: 'Chiedimi qualcosa su Oaxaca.', intro: 'Posso consigliare luoghi vicini, spiegare l’etichetta, suggerire cibo e dare consigli pratici di sicurezza.', useLocation: 'Usa la mia posizione', locationSaved: 'Posizione salvata. Chiedi cosa c’è vicino.', locationDenied: 'Permesso posizione negato. Puoi comunque chiedere di zone come Centro, Jalatlaco o Reforma.', locationUnavailable: 'La posizione non è disponibile su questo dispositivo o browser.', send: 'Invia', close: 'Chiudi chat', thinking: 'TuTour sta pensando...', error: 'La guida IA non ha potuto rispondere. Riprova.', unavailable: 'Il chatbot IA non è disponibile ora.', nearby: 'Cosa c’è vicino a me adesso?', food: 'Consiglia cibo locale vicino al Centro', etiquette: 'Spiega l’etichetta culturale di Oaxaca', safety: 'Cosa dovrei evitare di notte?' },
+    label: 'Apri chat guida locale IA', askTab: 'Chiedi alla guida IA', title: 'Guida locale IA', subtitle: 'Aiuto su Oaxaca nella tua lingua', input: 'Chiedi di cibo, sicurezza, etichetta o luoghi a Oaxaca...', empty: 'Chiedimi qualcosa su Oaxaca.', intro: 'Posso consigliare luoghi vicini, spiegare l’etichetta, suggerire cibo e dare consigli pratici di sicurezza.', useLocation: 'Usa la mia posizione', locationSaved: 'Posizione salvata. Chiedi cosa c’è vicino.', locationDenied: 'Permesso posizione negato. Puoi comunque chiedere di zone come Centro, Jalatlaco o Reforma.', locationUnavailable: 'La posizione non è disponibile su questo dispositivo o browser.', send: 'Invia', close: 'Chiudi chat', thinking: 'TuTour sta pensando...', error: 'La guida IA non ha potuto rispondere. Riprova.', unavailable: 'Il chatbot IA non è disponibile ora.', nearby: 'Cosa c’è vicino a me adesso?', food: 'Consiglia cibo locale vicino al Centro', etiquette: 'Spiega l’etichetta culturale di Oaxaca', safety: 'Cosa dovrei evitare di notte?' },
   pt: {
-    label: 'Abrir chat do guia local IA', title: 'Guia local IA', subtitle: 'Ajuda sobre Oaxaca no seu idioma', input: 'Pergunte sobre comida, segurança, etiqueta ou lugares em Oaxaca...', empty: 'Pergunte-me sobre Oaxaca.', intro: 'Posso recomendar lugares próximos, explicar etiqueta, sugerir comida e dar dicas práticas de segurança.', useLocation: 'Usar minha localização', locationSaved: 'Localização salva. Pergunte o que há por perto.', locationDenied: 'Permissão de localização negada. Você ainda pode perguntar por Centro, Jalatlaco ou Reforma.', locationUnavailable: 'Localização não disponível neste dispositivo ou navegador.', send: 'Enviar', close: 'Fechar chat', thinking: 'TuTour está pensando...', error: 'O guia IA não conseguiu responder. Tente novamente.', unavailable: 'O chatbot IA não está disponível agora.', nearby: 'O que há perto de mim agora?', food: 'Recomende comida local perto do Centro', etiquette: 'Explique a etiqueta cultural de Oaxaca', safety: 'O que devo evitar à noite?' },
+    label: 'Abrir chat do guia local IA', askTab: 'Perguntar ao guia IA', title: 'Guia local IA', subtitle: 'Ajuda sobre Oaxaca no seu idioma', input: 'Pergunte sobre comida, segurança, etiqueta ou lugares em Oaxaca...', empty: 'Pergunte-me sobre Oaxaca.', intro: 'Posso recomendar lugares próximos, explicar etiqueta, sugerir comida e dar dicas práticas de segurança.', useLocation: 'Usar minha localização', locationSaved: 'Localização salva. Pergunte o que há por perto.', locationDenied: 'Permissão de localização negada. Você ainda pode perguntar por Centro, Jalatlaco ou Reforma.', locationUnavailable: 'Localização não disponível neste dispositivo ou navegador.', send: 'Enviar', close: 'Fechar chat', thinking: 'TuTour está pensando...', error: 'O guia IA não conseguiu responder. Tente novamente.', unavailable: 'O chatbot IA não está disponível agora.', nearby: 'O que há perto de mim agora?', food: 'Recomende comida local perto do Centro', etiquette: 'Explique a etiqueta cultural de Oaxaca', safety: 'O que devo evitar à noite?' },
   ja: {
-    label: 'AIローカルガイドチャットを開く', title: 'AIローカルガイド', subtitle: '選択中の言語でオアハカ案内', input: 'オアハカの食事、安全、マナー、場所について質問...', empty: 'オアハカについて聞いてください。', intro: '近くのスポット、文化的マナー、食事案、安全アドバイスを案内できます。', useLocation: '現在地を使う', locationSaved: '現在地を保存しました。近くの場所を聞いてください。', locationDenied: '位置情報の許可が拒否されました。Centro、Jalatlaco、Reformaなどのエリアでも質問できます。', locationUnavailable: 'この端末またはブラウザでは位置情報を利用できません。', send: '送信', close: 'チャットを閉じる', thinking: 'TuTourが考えています...', error: 'AIガイドが応答できませんでした。もう一度お試しください。', unavailable: '現在AIチャットボットは利用できません。', nearby: '今、近くには何がありますか？', food: 'Centro近くのローカルフードを教えて', etiquette: 'オアハカの文化的マナーを説明して', safety: '夜に避けるべきことは？' },
+    label: 'AIローカルガイドチャットを開く', askTab: 'AIガイドに質問', title: 'AIローカルガイド', subtitle: '選択中の言語でオアハカ案内', input: 'オアハカの食事、安全、マナー、場所について質問...', empty: 'オアハカについて聞いてください。', intro: '近くのスポット、文化的マナー、食事案、安全アドバイスを案内できます。', useLocation: '現在地を使う', locationSaved: '現在地を保存しました。近くの場所を聞いてください。', locationDenied: '位置情報の許可が拒否されました。Centro、Jalatlaco、Reformaなどのエリアでも質問できます。', locationUnavailable: 'この端末またはブラウザでは位置情報を利用できません。', send: '送信', close: 'チャットを閉じる', thinking: 'TuTourが考えています...', error: 'AIガイドが応答できませんでした。もう一度お試しください。', unavailable: '現在AIチャットボットは利用できません。', nearby: '今、近くには何がありますか？', food: 'Centro近くのローカルフードを教えて', etiquette: 'オアハカの文化的マナーを説明して', safety: '夜に避けるべきことは？' },
   zh: {
-    label: '打开AI本地向导聊天', title: 'AI本地向导', subtitle: '用所选语言提供瓦哈卡帮助', input: '询问瓦哈卡美食、安全、礼仪或地点...', empty: '向我询问瓦哈卡。', intro: '我可以推荐附近地点、解释文化礼仪、建议美食，并提供实用安全建议。', useLocation: '使用我的位置', locationSaved: '位置已保存。可以询问附近有什么。', locationDenied: '位置权限被拒绝。你仍可以询问 Centro、Jalatlaco 或 Reforma 等区域。', locationUnavailable: '此设备或浏览器无法使用位置。', send: '发送', close: '关闭聊天', thinking: 'TuTour正在思考...', error: 'AI向导无法回复。请再试一次。', unavailable: 'AI聊天机器人现在不可用。', nearby: '我现在附近有什么？', food: '推荐Centro附近的本地美食', etiquette: '解释瓦哈卡文化礼仪', safety: '晚上应该避免什么？' }
+    label: '打开AI本地向导聊天', askTab: '询问AI向导', title: 'AI本地向导', subtitle: '用所选语言提供瓦哈卡帮助', input: '询问瓦哈卡美食、安全、礼仪或地点...', empty: '向我询问瓦哈卡。', intro: '我可以推荐附近地点、解释文化礼仪、建议美食，并提供实用安全建议。', useLocation: '使用我的位置', locationSaved: '位置已保存。可以询问附近有什么。', locationDenied: '位置权限被拒绝。你仍可以询问 Centro、Jalatlaco 或 Reforma 等区域。', locationUnavailable: '此设备或浏览器无法使用位置。', send: '发送', close: '关闭聊天', thinking: 'TuTour正在思考...', error: 'AI向导无法回复。请再试一次。', unavailable: 'AI聊天机器人现在不可用。', nearby: '我现在附近有什么？', food: '推荐Centro附近的本地美食', etiquette: '解释瓦哈卡文化礼仪', safety: '晚上应该避免什么？' }
 };
 
 const fallbackCopy = floatingGuideCopy.en;
@@ -90,6 +90,25 @@ const buildFloatingPrompt = (language, profile, user, userLocation) => {
   const appContext = curatedPlaceContext(language, userLocation, Math.max(0, MAX_GUIDE_PROMPT - core.length - 32));
   const full = appContext ? `${core}\nNearby TuTour place notes:\n${appContext}` : core;
   return full.length > MAX_GUIDE_PROMPT ? full.slice(0, MAX_GUIDE_PROMPT) : full;
+};
+
+const sendViaCompletionApi = async (text, systemPrompt, history) => {
+  const conversation = history.map(message => `${message.role === 'assistant' ? 'Guide' : 'Traveler'}: ${message.content}`).join('\n');
+  const prompt = `${systemPrompt}\n\nRecent conversation:\n${conversation || 'No earlier messages.'}\nTraveler: ${text}\nGuide:`;
+  const response = await fetch('/api/ai/completion', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      prompt,
+      appId: window.GENMB_APP_ID,
+      maxTokens: 560
+    })
+  });
+  if (!response.ok) throw new Error(response.status === 429 ? 'Rate limit exceeded (100 req/hr)' : 'AI request failed');
+  const json = await response.json();
+  const reply = json && json.data && json.data.text;
+  if (typeof reply !== 'string' || !reply.trim()) throw new Error('AI request failed');
+  return reply;
 };
 
 export function FloatingLocalGuide() {
@@ -164,19 +183,28 @@ export function FloatingLocalGuide() {
     setError('');
     setNotice('');
     const userMsg = { role: 'user', content: text };
-    const history = [...messages, userMsg].slice(-6);
+    const history = messages.slice(-6);
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setLoading(true);
     try {
-      if (!window.genmb || !window.genmb.chatbot || !window.genmb.chatbot.send) throw new Error(copy.unavailable);
-      const reply = await window.genmb.chatbot.send(text, {
-        history,
-        systemPrompt: buildFloatingPrompt(language, systemProfile, user, userLocation),
-        maxTokens: 560
-      });
-      if (typeof reply !== 'string') throw new Error(copy.error);
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+      const systemPrompt = buildFloatingPrompt(language, systemProfile, user, userLocation);
+      let reply = '';
+      if (window.genmb && window.genmb.chatbot && window.genmb.chatbot.send) {
+        try {
+          reply = await window.genmb.chatbot.send(text, {
+            history,
+            systemPrompt,
+            maxTokens: 560
+          });
+        } catch (chatErr) {
+          reply = await sendViaCompletionApi(text, systemPrompt, history);
+        }
+      } else {
+        reply = await sendViaCompletionApi(text, systemPrompt, history);
+      }
+      if (typeof reply !== 'string' || !reply.trim()) throw new Error(copy.error);
+      setMessages(prev => [...prev, { role: 'assistant', content: reply.trim() }]);
     } catch (err) {
       const message = err && err.message ? err.message : copy.error;
       setError(message);
@@ -238,7 +266,10 @@ export function FloatingLocalGuide() {
         </section>` : null}
       <button type="button" className="floating-guide-toggle" onClick=${() => setOpen(prev => !prev)} aria-label=${copy.label} aria-expanded=${open}>
         <${MessageCircle} className="h-6 w-6" />
-        <span>${copy.title}</span>
+        <span style=${{ display: 'grid', gap: '0.05rem', textAlign: 'left', lineHeight: 1.05 }}>
+          <strong style=${{ display: 'block', fontSize: '0.82rem', letterSpacing: '0.01em' }}>${copy.askTab || fallbackCopy.askTab}</strong>
+          <small style=${{ display: 'block', color: 'rgba(255,250,243,.82)', fontSize: '0.64rem', fontWeight: 900 }}>${copy.title}</small>
+        </span>
       </button>
     </div>
   `;

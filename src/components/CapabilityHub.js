@@ -1,6 +1,5 @@
 import React from 'react';
 import {CheckCircle2, Database, Languages, Loader2, Mail, MapPin, PlusCircle, Search, Trash2, WalletCards} from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { html } from '../jsx.js';
 import { useLanguage } from '../i18n.js';
 
@@ -254,7 +253,6 @@ export function CapabilityHub({ authUser = null, authLoading = false }) {
         ${placesSuccess ? html`<p className="mt-2 rounded-[var(--radius-md)] bg-[hsl(var(--secondary)/0.12)] p-2 text-xs font-bold text-[hsl(var(--secondary))]">${placesSuccess}</p>` : null}
         <form onSubmit=${searchPlaces} className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]"><input value=${placeQuery} onInput=${e => setPlaceQuery(e.target.value)} disabled=${placesLoading} className=${inputClass} /><button type="submit" disabled=${placesLoading || !placeQuery.trim()} className=${buttonClass}>${placesLoading ? html`<${Loader2} className="h-4 w-4 animate-spin" />${t('loading', 'Loading...')}` : html`<${Search} className="h-4 w-4" />${t('search', 'Search')}`}</button></form>
         <div className="mt-3 grid gap-2 md:grid-cols-2">${placesLoading && !placeResults.length ? html`<p className="text-sm font-bold text-[hsl(var(--muted-foreground))]">${t('loading', 'Loading...')}</p>` : placeResults.length ? placeResults.map((place, index) => html`<article key=${place.place_id || place.id || index} className="rounded-[var(--radius-md)] bg-[hsl(var(--muted))] p-3"><h4 className="font-black">${place.name || place.displayName || t('map', 'Map')}</h4><p className="mt-1 text-xs font-bold text-[hsl(var(--muted-foreground))]">${place.formatted_address || place.formattedAddress || place.vicinity || 'Oaxaca, México'}</p><p className="mt-1 text-xs font-black">${place.rating ? `★ ${place.rating}` : t('capabilityPlacesLive', 'Live Places result')}</p></article>`) : html`<p className="rounded-[var(--radius-md)] border border-dashed border-[hsl(var(--border))] p-3 text-sm font-bold text-[hsl(var(--muted-foreground))]">${t('capabilityPlacesEmpty', 'Search results appear here.')}</p>`}</div>
-        <${Link} to="/map" className="focus-ring mt-3 inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-3 text-sm font-black"><${MapPin} className="h-4 w-4" />${t('openMap', 'Open in Google Maps')}</${Link}>
       </div>
     </div>
   </section>`;
