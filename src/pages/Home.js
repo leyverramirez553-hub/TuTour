@@ -10,6 +10,7 @@ import { generateItinerary } from '../utils/itinerary.js';
 const homeCopy = {
   en: {
     eyebrow: 'Oaxaca local guide',
+    locationLabel: 'Oaxaca, Mexico',
     title: 'Experience Oaxaca, not someone else’s tour',
     subtitle: 'Discover authentic places, local advice, safety insights, and flexible itineraries designed for independent travelers.',
     ctaExplore: 'Start Exploring',
@@ -36,12 +37,14 @@ const homeCopy = {
     viewAll: 'View all',
     guideTitle: '1-day tour guide plan',
     guideText: 'Tap generate and TuTour builds morning, afternoon, and night stops with safety-aware pacing.',
+    stickerText: 'Local knowledge',
     safetyTitle: 'Safety advice',
     safetyText: 'Use registered taxis at night, confirm current hours on Google Maps, carry cash for markets, and avoid isolated areas after dark.',
     closePopup: 'Close popup'
   },
   es: {
     eyebrow: 'Guía local de Oaxaca',
+    locationLabel: 'Oaxaca, México',
     title: 'Vive Oaxaca, no el tour de otra persona',
     subtitle: 'Descubre lugares auténticos, consejos locales, seguridad e itinerarios flexibles para viajeros independientes.',
     ctaExplore: 'Empezar a explorar',
@@ -68,12 +71,14 @@ const homeCopy = {
     viewAll: 'Ver todo',
     guideTitle: 'Plan de guía turística de 1 día',
     guideText: 'Toca generar y TuTour crea paradas de mañana, tarde y noche con ritmo seguro.',
+    stickerText: 'Conocimiento local',
     safetyTitle: 'Consejos de seguridad',
     safetyText: 'Usa taxis registrados de noche, confirma horarios actuales en Google Maps, lleva efectivo a mercados y evita zonas aisladas después de oscurecer.',
     closePopup: 'Cerrar ventana'
   },
   fr: {
     eyebrow: 'Guide local d’Oaxaca',
+    locationLabel: 'Oaxaca, Mexique',
     title: 'Vivez Oaxaca, pas le circuit de quelqu’un d’autre',
     subtitle: 'Découvrez des lieux authentiques, des conseils locaux, des informations de sécurité et des itinéraires flexibles pour voyageurs indépendants.',
     ctaExplore: 'Commencer l’exploration',
@@ -100,12 +105,14 @@ const homeCopy = {
     viewAll: 'Tout voir',
     guideTitle: 'Plan de guide 1 jour',
     guideText: 'Touchez générer et TuTour crée les arrêts du matin, de l’après-midi et du soir avec un rythme sûr.',
+    stickerText: 'Savoir local',
     safetyTitle: 'Conseils de sécurité',
     safetyText: 'Utilisez des taxis enregistrés la nuit, vérifiez les horaires sur Google Maps, gardez de l’argent liquide pour les marchés et évitez les zones isolées après la nuit.',
     closePopup: 'Fermer la fenêtre'
   },
   de: {
     eyebrow: 'Lokaler Oaxaca-Guide',
+    locationLabel: 'Oaxaca, Mexiko',
     title: 'Erlebe Oaxaca, nicht die Tour eines anderen',
     subtitle: 'Entdecke authentische Orte, lokale Tipps, Sicherheitshinweise und flexible Routen für unabhängige Reisende.',
     ctaExplore: 'Entdeckung starten',
@@ -132,12 +139,14 @@ const homeCopy = {
     viewAll: 'Alle ansehen',
     guideTitle: '1-Tages-Reiseplan',
     guideText: 'Tippe auf Erstellen und TuTour plant Morgen, Nachmittag und Abend mit sicherem Tempo.',
+    stickerText: 'Lokales Wissen',
     safetyTitle: 'Sicherheitstipps',
     safetyText: 'Nutze nachts registrierte Taxis, prüfe aktuelle Öffnungszeiten auf Google Maps, nimm Bargeld für Märkte mit und meide abgelegene Bereiche nach Einbruch der Dunkelheit.',
     closePopup: 'Popup schließen'
   },
   it: {
     eyebrow: 'Guida locale di Oaxaca',
+    locationLabel: 'Oaxaca, Messico',
     title: 'Vivi Oaxaca, non il tour di qualcun altro',
     subtitle: 'Scopri luoghi autentici, consigli locali, note di sicurezza e itinerari flessibili per viaggiatori indipendenti.',
     ctaExplore: 'Inizia a esplorare',
@@ -164,12 +173,14 @@ const homeCopy = {
     viewAll: 'Vedi tutto',
     guideTitle: 'Piano guida di 1 giorno',
     guideText: 'Tocca genera e TuTour crea tappe di mattina, pomeriggio e sera con ritmo sicuro.',
+    stickerText: 'Conoscenza locale',
     safetyTitle: 'Consigli di sicurezza',
     safetyText: 'Usa taxi registrati di notte, conferma gli orari su Google Maps, porta contanti per i mercati ed evita zone isolate dopo il buio.',
     closePopup: 'Chiudi popup'
   },
   pt: {
     eyebrow: 'Guia local de Oaxaca',
+    locationLabel: 'Oaxaca, México',
     title: 'Viva Oaxaca, não o tour de outra pessoa',
     subtitle: 'Descubra lugares autênticos, conselhos locais, segurança e roteiros flexíveis para viajantes independentes.',
     ctaExplore: 'Começar a explorar',
@@ -196,12 +207,14 @@ const homeCopy = {
     viewAll: 'Ver tudo',
     guideTitle: 'Plano de guia de 1 dia',
     guideText: 'Toque em gerar e o TuTour monta manhã, tarde e noite com ritmo seguro.',
+    stickerText: 'Conhecimento local',
     safetyTitle: 'Dicas de segurança',
     safetyText: 'Use táxis registrados à noite, confirme horários atuais no Google Maps, leve dinheiro para mercados e evite áreas isoladas depois do anoitecer.',
     closePopup: 'Fechar janela'
   },
   ja: {
     eyebrow: 'オアハカ現地ガイド',
+    locationLabel: 'オアハカ、メキシコ',
     title: '誰かのツアーではなく、自分のオアハカを体験',
     subtitle: '本物の場所、地元の助言、安全情報、自由な旅程を独立旅行者向けにまとめました。',
     ctaExplore: '探索を始める',
@@ -227,13 +240,15 @@ const homeCopy = {
     picksTitle: '地元のおすすめ',
     viewAll: 'すべて見る',
     guideTitle: '1日ツアーガイドプラン',
-    guideText: '生成をタップすると、TuTourが午前・午後・夜 of 立ち寄り先を安全なペースで組みます。',
+    guideText: '生成をタップすると、TuTourが午前・午後・夜の立ち寄り先を安全なペースで組みます。',
+    stickerText: '地元の知識',
     safetyTitle: '安全アドバイス',
     safetyText: '夜は登録タクシーを使い、Google Mapsで最新営業時間を確認し、市場用に現金を持ち、暗くなった後は人通りの少ない場所を避けましょう。',
     closePopup: 'ポップアップを閉じる'
   },
   zh: {
     eyebrow: '瓦哈卡本地指南',
+    locationLabel: '瓦哈卡，墨西哥',
     title: '体验瓦哈卡，而不是别人的旅行团',
     subtitle: '为独立旅行者发现真实地点、本地建议、安全提示和灵活行程。',
     ctaExplore: '开始探索',
@@ -260,6 +275,7 @@ const homeCopy = {
     viewAll: '查看全部',
     guideTitle: '一日导游计划',
     guideText: '点击生成，TuTour 会按上午、下午、夜晚安排节奏安全的停靠点。',
+    stickerText: '本地知识',
     safetyTitle: '安全建议',
     safetyText: '夜间使用正规出租车，在 Google Maps 确认当前营业时间，为市场准备现金，天黑后避开偏僻区域。',
     closePopup: '关闭弹窗'
@@ -377,13 +393,7 @@ const exploreFreelyPopupCopy = {
   en: {
     title: '',
     subtitle: 'Travel at Your Own Pace.',
-    intro: [
-      'Not every traveler wants the same experience.',
-      'Some people want to spend an hour photographing a colorful street.',
-      'Others want to stay all afternoon in a market tasting food.',
-      'Traditional tours follow schedules.',
-      'TuTour follows you.'
-    ],
+    intro: ['Not every traveler wants the same experience.', 'Some people want to spend an hour photographing a colorful street.', 'Others want to stay all afternoon in a market tasting food.', 'Traditional tours follow schedules.', 'TuTour follows you.'],
     lead: 'With live maps, local recommendations, safety guidance, and flexible itineraries, you can:',
     bullets: ['Stay longer where you feel inspired', 'Skip places that don\'t interest you', 'Change plans at any moment', 'Discover unexpected places', 'Build your day around your interests'],
     closing: ['There is no group to keep up with.', 'No timetable to follow.', 'No guide rushing you to the next stop.', 'Oaxaca becomes yours to explore.']
@@ -391,261 +401,104 @@ const exploreFreelyPopupCopy = {
   es: {
     title: '',
     subtitle: 'Viaja a tu propio ritmo.',
-    intro: [
-      'No todos los viajeros quieren la misma experiencia.',
-      'Algunas personas quieren pasar una hora fotografiando una calle colorida.',
-      'Otras quieren quedarse toda la tarde en un mercado probando comida.',
-      'Los tours tradicionales siguen horarios.',
-      'TuTour te sigue a ti.'
-    ],
+    intro: ['No todos los viajeros quieren la misma experiencia.', 'Algunas personas quieren pasar una hora fotografiando una calle colorida.', 'Otras quieren quedarse toda la tarde en un mercado probando comida.', 'Los tours tradicionales siguen horarios.', 'TuTour te sigue a ti.'],
     lead: 'Con mapas en vivo, recomendaciones locales, orientación de seguridad e itinerarios flexibles, puedes:',
-    bullets: ['Quedarte más tiempo donde te sientas inspirado', 'Saltar lugares que no te interesen', 'Cambiar planes en cualquier momento', 'Descubrir lugares inesperados', 'Construir tu día alrededor de tus intereses'],
-    closing: ['No hay grupo al que seguirle el paso.', 'No hay horario obligatorio.', 'No hay guía apurándote hacia la siguiente parada.', 'Oaxaca se vuelve tuya para explorar.']
+    bullets: ['Quedarte más tiempo donde te sientas inspirado', 'Saltar lugares que no te interesen', 'Cambiar planes en cualquier momento', 'Descubrir lugares inesperados', 'Construir tu día según tus intereses'],
+    closing: ['No hay un grupo al que seguirle el ritmo.', 'No hay horario que cumplir.', 'No hay guía apresurándote a la siguiente parada.', 'Oaxaca se vuelve tuya para explorar.']
   },
   fr: {
-    title: 'Explorez librement',
-    subtitle: 'Voyagez à votre propre rythme.',
-    intro: [
-      'Tous les voyageurs ne recherchent pas la même expérience.',
-      'Certains veulent passer une heure à photographier une rue colorée.',
-      'D’autres veulent rester tout l’après-midi dans un marché à goûter la cuisine.',
-      'Les visites traditionnelles suivent des horaires.',
-      'TuTour vous suit.'
-    ],
+    title: '',
+    subtitle: 'Voyagez à votre rythme.',
+    intro: ['Tous les voyageurs ne recherchent pas la même expérience.', 'Certains veulent passer une heure à photographier une rue colorée.', 'D’autres veulent rester tout l’après-midi dans un marché à goûter la cuisine.', 'Les visites traditionnelles suivent des horaires.', 'TuTour vous suit.'],
     lead: 'Avec des cartes en direct, des recommandations locales, des conseils de sécurité et des itinéraires flexibles, vous pouvez :',
-    bullets: ['Rester plus longtemps là où vous vous sentez inspiré', 'Ignorer les lieux qui ne vous intéressent pas', 'Changer de plan à tout moment', 'Découvrir des lieux inattendus', 'Construire votre journée autour de vos intérêts'],
-    closing: ['Il n’y a pas de groupe à suivre.', 'Aucun horaire imposé.', 'Aucun guide ne vous presse vers l’arrêt suivant.', 'Oaxaca devient vôtre à explorer.']
+    bullets: ['Rester plus longtemps là où vous vous sentez inspiré', 'Éviter les lieux qui ne vous intéressent pas', 'Changer de plans à tout moment', 'Découvrir des endroits inattendus', 'Construire votre journée autour de vos intérêts'],
+    closing: ['Aucun groupe à suivre.', 'Aucun horaire à respecter.', 'Aucun guide qui vous presse vers le prochain arrêt.', 'Oaxaca devient vôtre à explorer.']
   },
   de: {
-    title: 'Frei erkunden',
+    title: '',
     subtitle: 'Reise in deinem eigenen Tempo.',
-    intro: [
-      'Nicht jeder Reisende möchte dieselbe Erfahrung.',
-      'Manche möchten eine Stunde lang eine farbenfrohe Straße fotografieren.',
-      'Andere möchten den ganzen Nachmittag auf einem Markt bleiben und Essen probieren.',
-      'Traditionelle Touren folgen Zeitplänen.',
-      'TuTour folgt dir.'
-    ],
+    intro: ['Nicht jeder Reisende möchte dieselbe Erfahrung.', 'Manche möchten eine Stunde lang eine farbenfrohe Straße fotografieren.', 'Andere möchten den ganzen Nachmittag auf einem Markt bleiben und Essen probieren.', 'Traditionelle Touren folgen Zeitplänen.', 'TuTour folgt dir.'],
     lead: 'Mit Live-Karten, lokalen Empfehlungen, Sicherheitshinweisen und flexiblen Routen kannst du:',
-    bullets: ['Länger bleiben, wo du dich inspiriert fühlst', 'Orte überspringen, die dich nicht interessieren', 'Pläne jederzeit ändern', 'Unerwartete Orte entdecken', 'Deinen Tag nach deinen Interessen gestalten'],
-    closing: ['Es gibt keine Gruppe, mit der du Schritt halten musst.', 'Keinen Zeitplan, dem du folgen musst.', 'Keinen Guide, der dich zur nächsten Station drängt.', 'Oaxaca wird dein Ort zum Erkunden.']
+    bullets: ['Länger bleiben, wo du inspiriert bist', 'Orte überspringen, die dich nicht interessieren', 'Pläne jederzeit ändern', 'Unerwartete Orte entdecken', 'Deinen Tag um deine Interessen herum gestalten'],
+    closing: ['Es gibt keine Gruppe, mit der du mithalten musst.', 'Keinen Zeitplan, dem du folgen musst.', 'Keinen Guide, der dich zur nächsten Station drängt.', 'Oaxaca wird dein Ort zum Erkunden.']
   },
   it: {
-    title: 'Esplora liberamente',
+    title: '',
     subtitle: 'Viaggia al tuo ritmo.',
-    intro: [
-      'Non tutti i viaggiatori desiderano la stessa esperienza.',
-      'Alcuni vogliono passare un’ora a fotografare una strada colorata.',
-      'Altri vogliono restare tutto il pomeriggio in un mercato ad assaggiare cibo.',
-      'I tour tradizionali seguono orari prestabiliti.',
-      'TuTour segue te.'
-    ],
+    intro: ['Non tutti i viaggiatori vogliono la stessa esperienza.', 'Alcune persone vogliono passare un’ora a fotografare una strada colorata.', 'Altre vogliono restare tutto il pomeriggio in un mercato assaggiando cibo.', 'I tour tradizionali seguono programmi.', 'TuTour segue te.'],
     lead: 'Con mappe live, consigli locali, indicazioni di sicurezza e itinerari flessibili, puoi:',
-    bullets: ['Restare più a lungo dove ti senti ispirato', 'Saltare i luoghi che non ti interessano', 'Cambiare piano in qualsiasi momento', 'Scoprire luoghi inaspettati', 'Costruire la giornata intorno ai tuoi interessi'],
-    closing: ['Non c’è un gruppo da seguire.', 'Nessun orario da rispettare.', 'Nessuna guida che ti spinge alla prossima tappa.', 'Oaxaca diventa tua da esplorare.']
+    bullets: ['Restare più a lungo dove ti senti ispirato', 'Saltare i luoghi che non ti interessano', 'Cambiare programma in qualsiasi momento', 'Scoprire luoghi inaspettati', 'Costruire la giornata intorno ai tuoi interessi'],
+    closing: ['Non c’è un gruppo da seguire.', 'Nessun orario da rispettare.', 'Nessuna guida che ti spinge alla tappa successiva.', 'Oaxaca diventa tua da esplorare.']
   },
   pt: {
-    title: 'Explore livremente',
+    title: '',
     subtitle: 'Viaje no seu próprio ritmo.',
-    intro: [
-      'Nem todo viajante quer a mesma experiência.',
-      'Algumas pessoas querem passar uma hora fotografando uma rua colorida.',
-      'Outras querem ficar a tarde inteira em um mercado provando comida.',
-      'Passeios tradicionais seguem horários.',
-      'O TuTour segue você.'
-    ],
+    intro: ['Nem todo viajante quer a mesma experiência.', 'Algumas pessoas querem passar uma hora fotografando uma rua colorida.', 'Outras querem ficar a tarde toda em um mercado provando comida.', 'Passeios tradicionais seguem horários.', 'O TuTour segue você.'],
     lead: 'Com mapas ao vivo, recomendações locais, orientação de segurança e roteiros flexíveis, você pode:',
-    bullets: ['Ficar mais tempo onde se sentir inspirado', 'Pular lugares que não interessam', 'Mudar planos a qualquer momento', 'Descobrir lugares inesperados', 'Construir seu dia em torno dos seus interesses'],
-    closing: ['Não há grupo para acompanhar.', 'Nenhum horário para seguir.', 'Nenhum guia apressando você para a próxima parada.', 'Oaxaca se torna sua para explorar.']
+    bullets: ['Ficar mais tempo onde se sentir inspirado', 'Pular lugares que não interessam', 'Mudar planos a qualquer momento', 'Descobrir lugares inesperados', 'Montar seu dia em torno dos seus interesses'],
+    closing: ['Não há grupo para acompanhar.', 'Não há cronograma para seguir.', 'Não há guia apressando você para a próxima parada.', 'Oaxaca se torna sua para explorar.']
   },
   ja: {
-    title: '自由に探索',
+    title: '',
     subtitle: '自分のペースで旅する。',
-    intro: [
-      'すべての旅行者が同じ体験を求めているわけではありません。',
-      '色鮮やかな通りを1時間かけて撮影したい人もいます。',
-      '市場で午後いっぱい食べ歩きをしたい人もいます。',
-      '従来のツアーはスケジュールに従います。',
-      'TuTourはあなたに合わせます。'
-    ],
-    lead: 'ライブマップ、地元のおすすめ、安全ガイド、柔軟な旅程があれば、次のことができます。',
-    bullets: ['心が動く場所に長く滞在する', '興味のない場所を飛ばす', 'いつでも予定を変える', '思いがけない場所を発見する', '自分の興味に合わせて1日を組み立てる'],
-    closing: ['歩調を合わせるグループはありません。', '従うべき時間割もありません。', '次の場所へ急かすガイドもいません。', 'オアハカはあなた自身が探索する場所になります。']
+    intro: ['すべての旅行者が同じ体験を望んでいるわけではありません。', '色鮮やかな通りを1時間かけて撮影したい人もいます。', '市場で食べ歩きをしながら午後いっぱい過ごしたい人もいます。', '従来のツアーはスケジュールに従います。', 'TuTourはあなたに合わせます。'],
+    lead: 'ライブマップ、地元のおすすめ、安全ガイド、柔軟な旅程があるので、次のことができます。',
+    bullets: ['心が動く場所に長く滞在する', '興味のない場所をスキップする', 'いつでも予定を変える', '思いがけない場所を発見する', '自分の興味を中心に一日を組み立てる'],
+    closing: ['ついていくべきグループはありません。', '従うべき時刻表もありません。', '次の場所へ急かすガイドもいません。', 'オアハカはあなた自身が探索する場所になります。']
   },
   zh: {
-    title: '自由探索',
+    title: '',
     subtitle: '按照自己的节奏旅行。',
-    intro: [
-      '并不是每位旅行者都想要同一种体验。',
-      '有些人想花一小时拍摄一条色彩丰富的街道。',
-      '另一些人想整个下午待在市场里品尝美食。',
-      '传统旅行团按时间表走。',
-      'TuTour 跟随你。'
-    ],
-    lead: '借助实时地图、本地推荐、安全指引和灵活行程，你可以：',
-    bullets: ['在感到有灵感的地方停留更久', '跳过不感兴趣的地点', '随时改变计划', '发现意想不到的地方', '围绕自己的兴趣安排一天'],
-    closing: ['没有需要跟上的团队。', '没有必须遵守的时间表。', '没有导游催你去下一站。', '瓦哈卡成为属于你的探索之地。']
+    intro: ['并不是每位旅行者都想要同样的体验。', '有人想花一个小时拍摄一条色彩鲜艳的街道。', '也有人想在市场里待上一整个下午品尝美食。', '传统旅行团遵循固定时间表。', 'TuTour 跟随你的节奏。'],
+    lead: '借助实时地图、本地推荐、安全指导和灵活行程，你可以：',
+    bullets: ['在让你有灵感的地方多停留', '跳过不感兴趣的地点', '随时改变计划', '发现意想不到的地方', '围绕自己的兴趣安排一天'],
+    closing: ['没有必须跟上的团队。', '没有必须遵守的时间表。', '没有催你去下一站的导游。', '瓦哈卡成为属于你探索的地方。']
   }
 };
-
 const buildMemoriesPopupCopy = {
   en: {
     title: '',
     subtitle: 'Create Your Own Story.',
-    paragraphs: [
-      'Many tours tell visitors exactly where to stand, what to photograph, what to eat, and what to think.',
-      'The result is often the same experience repeated thousands of times.',
-      'TuTour helps travelers discover Oaxaca through their own choices.',
-      'The moments you remember most often aren\'t the ones planned by someone else.',
-      'They\'re the unexpected conversations.',
-      'The hidden courtyard you found by accident.',
-      'The market stall recommended by a local.',
-      'The sunset you stayed to watch because nobody was telling you it was time to leave.',
-      'These become your memories.',
-      'Not a script.',
-      'Not a schedule.',
-      'Not someone else\'s story.',
-      'The best experiences are the ones you discover yourself.'
-    ]
+    paragraphs: ['Many tours tell visitors exactly where to stand, what to photograph, what to eat, and what to think.', 'The result is often the same experience repeated thousands of times.', 'TuTour helps travelers discover Oaxaca through their own choices.', 'The moments you remember most often aren\'t the ones planned by someone else.', 'They\'re the unexpected conversations.', 'The hidden courtyard you found by accident.', 'The market stall recommended by a local.', 'The sunset you stayed to watch because nobody was telling you it was time to leave.', 'These become your memories.', 'Not a script.', 'Not a schedule.', 'Not someone else\'s story.', 'The best experiences are the ones you discover yourself.']
   },
   es: {
     title: '',
     subtitle: 'Crea tu propia historia.',
-    paragraphs: [
-      'Muchos tours les dicen a los visitantes exactamente dónde pararse, qué fotografiar, qué comer y qué pensar.',
-      'El resultado suele ser la misma experiencia repetida miles de veces.',
-      'TuTour ayuda a los viajeros a descubrir Oaxaca a través de sus propias decisiones.',
-      'Los momentos que más recuerdas no suelen ser los planeados por otra persona.',
-      'Son las conversaciones inesperadas.',
-      'El patio escondido que encontraste por accidente.',
-      'El puesto del mercado recomendado por alguien local.',
-      'El atardecer que te quedaste a mirar porque nadie te decía que era hora de irte.',
-      'Eso se convierte en tus recuerdos.',
-      'No un guion.',
-      'No un horario.',
-      'No la historia de otra persona.',
-      'Las mejores experiencias son las que descubres por ti mismo.'
-    ]
+    paragraphs: ['Muchos tours les dicen a los visitantes exactamente dónde pararse, qué fotografiar, qué comer y qué pensar.', 'El resultado suele ser la misma experiencia repetida miles de veces.', 'TuTour ayuda a los viajeros a descubrir Oaxaca a través de sus propias decisiones.', 'Los momentos que más recuerdas a menudo no son los planeados por otra persona.', 'Son las conversaciones inesperadas.', 'El patio escondido que encontraste por accidente.', 'El puesto del mercado recomendado por una persona local.', 'El atardecer que te quedaste a mirar porque nadie te decía que era hora de irte.', 'Estos se convierten en tus recuerdos.', 'No un guion.', 'No un horario.', 'No la historia de otra persona.', 'Las mejores experiencias son las que descubres tú mismo.']
   },
   fr: {
-    title: 'Créez de vrais souvenirs',
+    title: '',
     subtitle: 'Créez votre propre histoire.',
-    paragraphs: [
-      'Beaucoup de visites disent aux visiteurs exactement où se placer, quoi photographier, quoi manger et quoi penser.',
-      'Le résultat est souvent la même expérience répétée des milliers de fois.',
-      'TuTour aide les voyageurs à découvrir Oaxaca à travers leurs propres choix.',
-      'Les moments dont on se souvient le plus ne sont souvent pas ceux planifiés par quelqu’un d’autre.',
-      'Ce sont les conversations inattendues.',
-      'La cour cachée trouvée par hasard.',
-      'Le stand de marché recommandé par une personne locale.',
-      'Le coucher de soleil que vous êtes resté regarder parce que personne ne vous disait qu’il fallait partir.',
-      'Ceux-ci deviennent vos souvenirs.',
-      'Pas un script.',
-      'Pas un horaire.',
-      'Pas l’histoire de quelqu’un d’autre.',
-      'Les meilleures expériences sont celles que vous découvrez vous-même.'
-    ]
+    paragraphs: ['Beaucoup de visites disent aux voyageurs exactement où se tenir, quoi photographier, quoi manger et quoi penser.', 'Le résultat est souvent la même expérience répétée des milliers de fois.', 'TuTour aide les voyageurs à découvrir Oaxaca à travers leurs propres choix.', 'Les moments dont on se souvient le plus ne sont souvent pas ceux planifiés par quelqu’un d’autre.', 'Ce sont les conversations inattendues.', 'La cour cachée trouvée par hasard.', 'Le stand de marché recommandé par une personne locale.', 'Le coucher de soleil que vous êtes resté regarder parce que personne ne vous disait qu’il était temps de partir.', 'Ils deviennent vos souvenirs.', 'Pas un scénario.', 'Pas un programme.', 'Pas l’histoire de quelqu’un d’autre.', 'Les meilleures expériences sont celles que vous découvrez vous-même.']
   },
   de: {
-    title: 'Echte Erinnerungen schaffen',
-    subtitle: 'Schreibe deine eigene Geschichte.',
-    paragraphs: [
-      'Viele Touren sagen Besuchern ganz genau, wo sie stehen, was sie fotografieren, was sie essen und was sie denken sollen.',
-      'Das Ergebnis ist oft dieselbe Erfahrung, tausendfach wiederholt.',
-      'TuTour hilft Reisenden, Oaxaca durch ihre eigenen Entscheidungen zu entdecken.',
-      'Die Momente, an die du dich am meisten erinnerst, sind oft nicht die, die jemand anderes geplant hat.',
-      'Es sind die unerwarteten Gespräche.',
-      'Der versteckte Innenhof, den du zufällig gefunden hast.',
-      'Der Marktstand, den dir jemand aus der Gegend empfohlen hat.',
-      'Der Sonnenuntergang, den du weiter angeschaut hast, weil niemand sagte, dass es Zeit zum Gehen ist.',
-      'Das werden deine Erinnerungen.',
-      'Kein Skript.',
-      'Kein Zeitplan.',
-      'Nicht die Geschichte eines anderen.',
-      'Die besten Erlebnisse sind die, die du selbst entdeckst.'
-    ]
+    title: '',
+    subtitle: 'Schreib deine eigene Geschichte.',
+    paragraphs: ['Viele Touren sagen Besucherinnen und Besuchern genau, wo sie stehen, was sie fotografieren, was sie essen und was sie denken sollen.', 'Das Ergebnis ist oft dieselbe Erfahrung, tausendfach wiederholt.', 'TuTour hilft Reisenden, Oaxaca durch ihre eigenen Entscheidungen zu entdecken.', 'Die Momente, an die du dich am meisten erinnerst, sind oft nicht die, die jemand anderes geplant hat.', 'Es sind die unerwarteten Gespräche.', 'Der versteckte Innenhof, den du zufällig gefunden hast.', 'Der Marktstand, den dir jemand aus der Stadt empfohlen hat.', 'Der Sonnenuntergang, den du länger angesehen hast, weil niemand sagte, dass es Zeit sei zu gehen.', 'Das werden deine Erinnerungen.', 'Kein Skript.', 'Kein Zeitplan.', 'Nicht die Geschichte eines anderen.', 'Die besten Erlebnisse sind die, die du selbst entdeckst.']
   },
   it: {
-    title: 'Crea ricordi veri',
+    title: '',
     subtitle: 'Crea la tua storia.',
-    paragraphs: [
-      'Molti tour dicono ai visitatori esattamente dove stare, cosa fotografare, cosa mangiare e cosa pensare.',
-      'Il risultato è spesso la stessa esperienza ripetuta migliaia di volte.',
-      'TuTour aiuta i viaggiatori a scoprire Oaxaca attraverso le proprie scelte.',
-      'I momenti che ricordi di più spesso non sono quelli pianificati da qualcun altro.',
-      'Sono le conversazioni inaspettate.',
-      'Il cortile nascosto trovato per caso.',
-      'La bancarella del mercato consigliata da una persona del posto.',
-      'Il tramonto che sei rimasto a guardare perché nessuno ti diceva che era ora di andare.',
-      'Questi diventano i tuoi ricordi.',
-      'Non un copione.',
-      'Non un programma.',
-      'Non la storia di qualcun altro.',
-      'Le esperienze migliori sono quelle che scopri da solo.'
-    ]
+    paragraphs: ['Molti tour dicono ai visitatori esattamente dove stare, cosa fotografare, cosa mangiare e cosa pensare.', 'Il risultato è spesso la stessa esperienza ripetuta migliaia di volte.', 'TuTour aiuta i viaggiatori a scoprire Oaxaca attraverso le proprie scelte.', 'I momenti che ricordi di più spesso non sono quelli pianificati da qualcun altro.', 'Sono le conversazioni inattese.', 'Il cortile nascosto trovato per caso.', 'La bancarella del mercato consigliata da una persona del posto.', 'Il tramonto che sei rimasto a guardare perché nessuno ti diceva che era ora di andare via.', 'Questi diventano i tuoi ricordi.', 'Non un copione.', 'Non un programma.', 'Non la storia di qualcun altro.', 'Le esperienze migliori sono quelle che scopri da solo.']
   },
   pt: {
-    title: 'Crie memórias reais',
+    title: '',
     subtitle: 'Crie sua própria história.',
-    paragraphs: [
-      'Muitos passeios dizem aos visitantes exatamente onde ficar, o que fotografar, o que comer e o que pensar.',
-      'O resultado costuma ser a mesma experiência repetida milhares de vezes.',
-      'O TuTour ajuda viajantes a descobrir Oaxaca por meio de suas próprias escolhas.',
-      'Os momentos que você mais lembra geralmente não são aqueles planejados por outra pessoa.',
-      'São as conversas inesperadas.',
-      'O pátio escondido que você encontrou por acaso.',
-      'A barraca do mercado recomendada por alguém local.',
-      'O pôr do sol que você ficou para assistir porque ninguém dizia que era hora de ir embora.',
-      'Isso se torna suas memórias.',
-      'Não um roteiro.',
-      'Não uma programação.',
-      'Não a história de outra pessoa.',
-      'As melhores experiências são aquelas que você descobre por conta própria.'
-    ]
+    paragraphs: ['Muitos passeios dizem aos visitantes exatamente onde ficar, o que fotografar, o que comer e o que pensar.', 'O resultado muitas vezes é a mesma experiência repetida milhares de vezes.', 'O TuTour ajuda viajantes a descobrir Oaxaca por meio de suas próprias escolhas.', 'Os momentos de que você mais se lembra geralmente não são os planejados por outra pessoa.', 'São as conversas inesperadas.', 'O pátio escondido que você encontrou por acaso.', 'A barraca do mercado recomendada por alguém local.', 'O pôr do sol que você ficou para ver porque ninguém estava dizendo que era hora de ir embora.', 'Esses viram suas memórias.', 'Não um roteiro.', 'Não uma agenda.', 'Não a história de outra pessoa.', 'As melhores experiências são aquelas que você descobre por conta própria.']
   },
   ja: {
-    title: '本当の思い出を作る',
+    title: '',
     subtitle: '自分だけの物語を作る。',
-    paragraphs: [
-      '多くのツアーは、どこに立ち、何を撮り、何を食べ、何を考えるべきかまで訪問者に指示します。',
-      'その結果、同じ体験が何千回も繰り返されることがよくあります。',
-      'TuTourは、旅行者が自分の選択でオアハカを発見できるようにします。',
-      '最も心に残る瞬間は、誰かが計画したものではないことが多いものです。',
-      '思いがけない会話。',
-      '偶然見つけた隠れた中庭。',
-      '地元の人に勧められた市場の屋台。',
-      '誰にも出発を急かされず、見続けた夕日。',
-      'それらがあなたの思い出になります。',
-      '台本ではありません。',
-      '予定表でもありません。',
-      '誰か別の人の物語でもありません。',
-      '最高の体験は、自分で発見するものです。'
-    ]
+    paragraphs: ['多くのツアーは、どこに立つか、何を撮るか、何を食べるか、何を考えるかまで訪問者に細かく指示します。', 'その結果、何千回も繰り返される同じ体験になりがちです。', 'TuTourは、旅行者が自分の選択でオアハカを発見する手助けをします。', '一番心に残る瞬間は、誰かに計画されたものではないことが多いものです。', '思いがけない会話。', '偶然見つけた隠れた中庭。', '地元の人にすすめられた市場の屋台。', '誰にも出発時間を告げられず、そのまま眺め続けた夕日。', 'それらがあなたの思い出になります。', '台本ではありません。', '予定表でもありません。', '誰か別の人の物語でもありません。', '最高の体験は、自分で見つけるものです。']
   },
   zh: {
-    title: '创造真实回忆',
-    subtitle: '创造属于你自己的故事。',
-    paragraphs: [
-      '许多旅行团会准确告诉游客该站在哪里、拍什么、吃什么、以及该怎么想。',
-      '结果往往是同一种体验被重复成千上万次。',
-      'TuTour 帮助旅行者通过自己的选择发现瓦哈卡。',
-      '你最常记住的时刻，往往不是别人为你安排好的。',
-      '而是那些意想不到的对话。',
-      '偶然发现的隐秘庭院。',
-      '当地人推荐的市场摊位。',
-      '因为没人催你离开而留下来看的日落。',
-      '这些才会成为你的回忆。',
-      '不是脚本。',
-      '不是日程表。',
-      '不是别人的故事。',
-      '最好的体验，是你亲自发现的体验。'
-    ]
+    title: '',
+    subtitle: '创造你自己的故事。',
+    paragraphs: ['许多旅行团会明确告诉游客站在哪里、拍什么、吃什么、甚至该怎么想。', '结果往往是同一种体验被重复了成千上万次。', 'TuTour 帮助旅行者通过自己的选择发现瓦哈卡。', '你最常记住的时刻，往往不是别人替你安排好的。', '而是意想不到的交谈。', '偶然发现的隐秘庭院。', '当地人推荐的市场摊位。', '因为没人催你离开而留下来观看的日落。', '这些才会成为你的记忆。', '不是脚本。', '不是日程表。', '不是别人的故事。', '最好的体验，是你自己发现的体验。']
   }
 };
-
 const supportLocalPopupCopy = {
   en: {
-    eyebrow: '',
     subtitle: 'Keep Tourism Local.',
     intro: 'Oaxaca\'s culture is created by thousands of people:',
     bullets: ['Artisans', 'Market vendors', 'Family restaurants', 'Mezcal producers', 'Musicians', 'Small business owners'],
@@ -658,102 +511,92 @@ const supportLocalPopupCopy = {
     ]
   },
   es: {
-    eyebrow: '',
     subtitle: 'Mantén el turismo local.',
     intro: 'La cultura de Oaxaca es creada por miles de personas:',
-    bullets: ['Artesanos', 'Vendedores de mercados', 'Restaurantes familiares', 'Productores de mezcal', 'Músicos', 'Pequeños negocios'],
+    bullets: ['Artesanos', 'Vendedores de mercado', 'Restaurantes familiares', 'Productores de mezcal', 'Músicos', 'Pequeños negocios'],
     paragraphs: [
       'TuTour ayuda a los viajeros a conectar directamente con estas experiencias.',
       'Cuando los visitantes gastan localmente, más ingresos del turismo llegan a las personas que preservan las tradiciones y la cultura de Oaxaca todos los días.',
       'El objetivo no es reemplazar a los guías ni a los tours organizados.',
-      'El objetivo es dar a los viajeros otra opción: una que fomente la exploración independiente y ayude a que el dinero del turismo llegue a más rincones de Oaxaca.',
+      'El objetivo es dar a los viajeros otra opción: una que fomente la exploración independiente mientras ayuda a que el dinero del turismo llegue a más rincones de Oaxaca.',
       'Más conexiones locales. Más impacto local.'
     ]
   },
   fr: {
-    eyebrow: 'Soutenez Oaxaca local',
-    subtitle: 'Gardons le tourisme local.',
+    subtitle: 'Gardez le tourisme local.',
     intro: 'La culture d’Oaxaca est créée par des milliers de personnes :',
     bullets: ['Artisans', 'Vendeurs de marché', 'Restaurants familiaux', 'Producteurs de mezcal', 'Musiciens', 'Petites entreprises'],
     paragraphs: [
       'TuTour aide les voyageurs à se connecter directement à ces expériences.',
-      'Lorsque les visiteurs dépensent localement, une plus grande part des revenus touristiques atteint les personnes qui préservent chaque jour les traditions et la culture d’Oaxaca.',
-      'Le but n’est pas de remplacer les guides ou les visites organisées.',
-      'Le but est d’offrir aux voyageurs une autre option : une option qui encourage l’exploration indépendante tout en aidant les dollars du tourisme à atteindre davantage de coins d’Oaxaca.',
-      'Plus de connexions locales. Plus d’impact local.'
+      'Lorsque les visiteurs dépensent localement, davantage de revenus touristiques atteignent les personnes qui préservent chaque jour les traditions et la culture d’Oaxaca.',
+      'L’objectif n’est pas de remplacer les guides ou les visites organisées.',
+      'L’objectif est d’offrir aux voyageurs une autre option : une option qui encourage l’exploration indépendante tout en aidant les dollars du tourisme à atteindre davantage de coins d’Oaxaca.',
+      'Plus de liens locaux. Plus d’impact local.'
     ]
   },
   de: {
-    eyebrow: 'Lokales Oaxaca unterstützen',
     subtitle: 'Tourismus lokal halten.',
     intro: 'Oaxacas Kultur wird von Tausenden Menschen geschaffen:',
-    bullets: ['Kunsthandwerker', 'Marktverkäufer', 'Familienrestaurants', 'Mezcal-Produzenten', 'Musiker', 'Kleine Unternehmen'],
+    bullets: ['Kunsthandwerker', 'Marktverkäufer', 'Familienrestaurants', 'Mezcal-Produzenten', 'Musiker', 'Kleinunternehmer'],
     paragraphs: [
-      'TuTour hilft Reisenden, direkt mit diesen Erlebnissen in Kontakt zu kommen.',
+      'TuTour hilft Reisenden, sich direkt mit diesen Erlebnissen zu verbinden.',
       'Wenn Besucher lokal ausgeben, erreicht mehr Tourismuseinkommen die Menschen, die Oaxacas Traditionen und Kultur jeden Tag bewahren.',
       'Das Ziel ist nicht, Guides oder organisierte Touren zu ersetzen.',
-      'Das Ziel ist, Reisenden eine weitere Option zu geben – eine, die unabhängiges Erkunden fördert und hilft, Tourismuseinnahmen in mehr Ecken Oaxacas zu bringen.',
+      'Das Ziel ist, Reisenden eine weitere Option zu geben – eine, die unabhängiges Erkunden fördert und gleichzeitig hilft, Tourismuseinnahmen in mehr Ecken Oaxacas zu bringen.',
       'Mehr lokale Verbindungen. Mehr lokale Wirkung.'
     ]
   },
   it: {
-    eyebrow: 'Sostieni Oaxaca locale',
     subtitle: 'Mantieni il turismo locale.',
     intro: 'La cultura di Oaxaca è creata da migliaia di persone:',
-    bullets: ['Artigiani', 'Venditori dei mercati', 'Ristoranti familiari', 'Produttori di mezcal', 'Musicisti', 'Piccole imprese'],
+    bullets: ['Artigiani', 'Venditori dei mercati', 'Ristoranti familiari', 'Produttori di mezcal', 'Musicisti', 'Piccoli imprenditori'],
     paragraphs: [
       'TuTour aiuta i viaggiatori a connettersi direttamente con queste esperienze.',
-      'Quando i visitatori spendono localmente, una quota maggiore delle entrate turistiche arriva alle persone che preservano ogni giorno le tradizioni e la cultura di Oaxaca.',
-      'L’obiettivo non è sostituire guide o tour organizzati.',
-      'L’obiettivo è offrire ai viaggiatori un’altra opzione: una che incoraggi l’esplorazione indipendente e aiuti i dollari del turismo a raggiungere più angoli di Oaxaca.',
+      'Quando i visitatori spendono localmente, una quota maggiore delle entrate turistiche raggiunge le persone che preservano ogni giorno le tradizioni e la cultura di Oaxaca.',
+      'L’obiettivo non è sostituire le guide o i tour organizzati.',
+      'L’obiettivo è offrire ai viaggiatori un’altra opzione: una che incoraggi l’esplorazione indipendente aiutando il denaro del turismo a raggiungere più angoli di Oaxaca.',
       'Più connessioni locali. Più impatto locale.'
     ]
   },
   pt: {
-    eyebrow: 'Apoie Oaxaca local',
     subtitle: 'Mantenha o turismo local.',
     intro: 'A cultura de Oaxaca é criada por milhares de pessoas:',
-    bullets: ['Artesãos', 'Vendedores de mercado', 'Restaurantes familiares', 'Produtores de mezcal', 'Músicos', 'Pequenos negócios'],
+    bullets: ['Artesãos', 'Vendedores de mercado', 'Restaurantes familiares', 'Produtores de mezcal', 'Músicos', 'Pequenos empresários'],
     paragraphs: [
-      'O TuTour ajuda viajantes a se conectarem diretamente com essas experiências.',
-      'Quando visitantes gastam localmente, mais receita do turismo chega às pessoas que preservam as tradições e a cultura de Oaxaca todos os dias.',
+      'O TuTour ajuda viajantes a se conectar diretamente com essas experiências.',
+      'Quando visitantes gastam localmente, mais receita do turismo chega às pessoas que preservam todos os dias as tradições e a cultura de Oaxaca.',
       'O objetivo não é substituir guias ou passeios organizados.',
       'O objetivo é dar aos viajantes outra opção — uma que incentive a exploração independente enquanto ajuda o dinheiro do turismo a chegar a mais cantos de Oaxaca.',
       'Mais conexões locais. Mais impacto local.'
     ]
   },
   ja: {
-    eyebrow: '地元オアハカを応援',
-    subtitle: '観光を地域に残す。',
-    intro: 'オアハカの文化は、何千もの人々によって作られています。',
+    subtitle: '観光を地域に根ざしたものに。',
+    intro: 'オアハカの文化は、何千人もの人々によってつくられています。',
     bullets: ['職人', '市場の販売者', '家族経営のレストラン', 'メスカル生産者', '音楽家', '小規模事業者'],
     paragraphs: [
-      'TuTourは、旅行者がこうした体験と直接つながる手助けをします。',
+      'TuTourは、旅行者がこれらの体験と直接つながる手助けをします。',
       '訪問者が地元でお金を使うことで、オアハカの伝統と文化を日々守る人々に、より多くの観光収入が届きます。',
       '目的は、ガイドや組織されたツアーを置き換えることではありません。',
-      '目的は、旅行者にもう一つの選択肢を提供することです。独立した探索を促しながら、観光のお金がオアハカのより多くの場所に届くようにする選択肢です。',
-      'より多くの地元とのつながり。より大きな地域への影響。'
+      '目的は、旅行者にもう一つの選択肢を提供することです。自立した探索を促しながら、観光のお金がオアハカのより多くの場所に届く選択肢です。',
+      'より多くの地域とのつながり。より大きな地域への影響。'
     ]
   },
   zh: {
-    eyebrow: '支持本地瓦哈卡',
     subtitle: '让旅游留在本地。',
     intro: '瓦哈卡的文化由成千上万的人共同创造：',
-    bullets: ['手工艺人', '市场摊主', '家庭餐馆', 'Mezcal 生产者', '音乐人', '小企业主'],
+    bullets: ['手工艺人', '市场摊贩', '家庭餐馆', '梅斯卡尔生产者', '音乐家', '小企业主'],
     paragraphs: [
       'TuTour 帮助旅行者直接连接这些体验。',
-      '当游客在本地消费时，更多旅游收入会到达每天守护瓦哈卡传统与文化的人们手中。',
+      '当游客在本地消费时，更多旅游收入会到达那些每天守护瓦哈卡传统与文化的人手中。',
       '目标不是取代导游或有组织的旅行团。',
-      '目标是给旅行者另一个选择——鼓励独立探索，同时帮助旅游资金到达瓦哈卡更多角落。',
+      '目标是给旅行者另一种选择——一种鼓励独立探索，同时帮助旅游收入到达瓦哈卡更多角落的选择。',
       '更多本地连接。更多本地影响。'
     ]
   }
 };
-
 const whyTuTourMissionPopupCopy = {
   en: {
-    eyebrow: '',
-    title: 'Why TuTour Exists',
     subtitle: 'Tourism Should Feel Personal.',
     paragraphs: [
       'TuTour was created around a simple idea:',
@@ -764,92 +607,77 @@ const whyTuTourMissionPopupCopy = {
     ]
   },
   es: {
-    eyebrow: '',
-    title: 'Por qué existe TuTour',
     subtitle: 'El turismo debe sentirse personal.',
     paragraphs: [
-      'TuTour nació de una idea sencilla:',
+      'TuTour fue creado alrededor de una idea simple:',
       'Los viajeros no necesitan un guion para vivir Oaxaca.',
-      'Necesitan información local confiable, orientación práctica de seguridad, herramientas flexibles de planificación y la libertad de explorar.',
-      'El resultado es un viaje más personal, una conexión más fuerte con la cultura local y un modelo turístico que ayuda a distribuir beneficios económicos en toda la comunidad.',
+      'Necesitan información local confiable, orientación práctica de seguridad, herramientas de planificación flexibles y la libertad de explorar.',
+      'El resultado es un viaje más personal, una conexión más fuerte con la cultura local y un modelo de turismo que ayuda a distribuir los beneficios económicos por toda la comunidad.',
       'Conocimiento local. Experiencias reales. A tu manera.'
     ]
   },
   fr: {
-    eyebrow: 'Alors, pourquoi TuTour... ?',
-    title: 'Pourquoi TuTour existe',
     subtitle: 'Le tourisme devrait être personnel.',
     paragraphs: [
       'TuTour a été créé autour d’une idée simple :',
-      'Les voyageurs n’ont pas besoin d’un script pour vivre Oaxaca.',
-      'Ils ont besoin d’informations locales fiables, de conseils pratiques de sécurité, d’outils de planification flexibles et de la liberté d’explorer.',
+      'Les voyageurs n’ont pas besoin d’un scénario pour découvrir Oaxaca.',
+      'Ils ont besoin d’informations locales fiables, de conseils de sécurité pratiques, d’outils de planification flexibles et de la liberté d’explorer.',
       'Le résultat est un voyage plus personnel, un lien plus fort avec la culture locale et un modèle touristique qui aide à répartir les bénéfices économiques dans toute la communauté.',
       'Savoir local. Expériences réelles. À votre façon.'
     ]
   },
   de: {
-    eyebrow: 'Alsooo, warum TuTour...?',
-    title: 'Warum TuTour existiert',
     subtitle: 'Tourismus sollte persönlich sein.',
     paragraphs: [
       'TuTour entstand aus einer einfachen Idee:',
       'Reisende brauchen kein Skript, um Oaxaca zu erleben.',
-      'Sie brauchen vertrauenswürdige lokale Informationen, praktische Sicherheitshinweise, flexible Planungstools und die Freiheit zu erkunden.',
-      'Das Ergebnis ist eine persönlichere Reise, eine stärkere Verbindung zur lokalen Kultur und ein Tourismusmodell, das wirtschaftliche Vorteile in der ganzen Gemeinschaft verteilt.',
+      'Sie brauchen vertrauenswürdige lokale Informationen, praktische Sicherheitshinweise, flexible Planungswerkzeuge und die Freiheit, selbst zu erkunden.',
+      'Das Ergebnis ist eine persönlichere Reise, eine stärkere Verbindung zur lokalen Kultur und ein Tourismusmodell, das hilft, wirtschaftliche Vorteile in der ganzen Gemeinschaft zu verteilen.',
       'Lokales Wissen. Echte Erlebnisse. Dein Weg.'
     ]
   },
   it: {
-    eyebrow: 'Allora, perché TuTour...?',
-    title: 'Perché esiste TuTour',
     subtitle: 'Il turismo dovrebbe essere personale.',
     paragraphs: [
       'TuTour è nato da un’idea semplice:',
       'I viaggiatori non hanno bisogno di un copione per vivere Oaxaca.',
-      'Hanno bisogno di informazioni locali affidabili, consigli pratici sulla sicurezza, strumenti di pianificazione flessibili e libertà di esplorare.',
-      'Il risultato è un viaggio più personale, un legame più forte con la cultura locale e un modello turistico che aiuta a distribuire benefici economici in tutta la comunità.',
+      'Hanno bisogno di informazioni locali affidabili, indicazioni pratiche di sicurezza, strumenti di pianificazione flessibili e libertà di esplorare.',
+      'Il risultato è un viaggio più personale, una connessione più forte con la cultura locale e un modello turistico che aiuta a distribuire i benefici economici in tutta la comunità.',
       'Conoscenza locale. Esperienze reali. A modo tuo.'
     ]
   },
   pt: {
-    eyebrow: 'Entãooo, por que TuTour...?',
-    title: 'Por que o TuTour existe',
     subtitle: 'O turismo deve parecer pessoal.',
     paragraphs: [
-      'O TuTour foi criado a partir de uma ideia simples:',
-      'Viajantes não precisam de um roteiro pronto para viver Oaxaca.',
+      'O TuTour foi criado em torno de uma ideia simples:',
+      'Viajantes não precisam de um roteiro para viver Oaxaca.',
       'Eles precisam de informações locais confiáveis, orientação prática de segurança, ferramentas flexíveis de planejamento e liberdade para explorar.',
       'O resultado é uma jornada mais pessoal, uma conexão mais forte com a cultura local e um modelo de turismo que ajuda a espalhar benefícios econômicos por toda a comunidade.',
       'Conhecimento local. Experiências reais. Do seu jeito.'
     ]
   },
   ja: {
-    eyebrow: 'それで、なぜTuTour...？',
-    title: 'TuTourが存在する理由',
     subtitle: '観光はもっと自分らしく感じられるべきです。',
     paragraphs: [
-      'TuTourは、シンプルな考えから生まれました。',
+      'TuTourは、ひとつのシンプルな考えから生まれました。',
       '旅行者がオアハカを体験するために台本は必要ありません。',
-      '必要なのは、信頼できる地元情報、実用的な安全ガイド、柔軟な計画ツール、そして自由に探索することです。',
-      'その結果、より個人的な旅、地域文化とのより強いつながり、そして地域全体に経済的な恩恵を広げる観光モデルが生まれます。',
+      '必要なのは、信頼できる現地情報、実用的な安全ガイド、柔軟な計画ツール、そして自由に探索することです。',
+      'その結果、より自分らしい旅、地域文化とのより強いつながり、そして地域全体に経済的な恩恵を広げる観光モデルが生まれます。',
       '地元の知識。本物の体験。自分らしく。'
     ]
   },
   zh: {
-    eyebrow: '那么，为什么选择 TuTour...？',
-    title: 'TuTour 存在的原因',
     subtitle: '旅游应该更有个人感。',
     paragraphs: [
       'TuTour 围绕一个简单的想法而创建：',
-      '旅行者不需要照着脚本来体验瓦哈卡。',
+      '旅行者不需要照着脚本去体验瓦哈卡。',
       '他们需要可信赖的本地信息、实用的安全指导、灵活的规划工具，以及自由探索的空间。',
-      '结果是一段更个人化的旅程、与本地文化更深的连接，以及一种帮助经济收益在社区中更广泛流动的旅游模式。',
+      '结果是一段更个人化的旅程，与本地文化建立更深的联系，并形成一种帮助经济收益在社区中更广泛流动的旅游模式。',
       '本地知识。真实体验。你的方式。'
     ]
   }
 };
 
-const localKnowledgeIcon = '/api/apps/romcWH54d4SR/assets/localknowledgeicon1.png';
 const heroBackgroundImage = '/api/apps/romcWH54d4SR/assets/tutourbackground2.png';
 
 export function Home() {
@@ -878,7 +706,7 @@ export function Home() {
           <div className="relative z-10 flex min-h-[calc(560px-3rem)] max-w-3xl flex-col justify-center sm:min-h-[calc(560px-4rem)] lg:min-h-[calc(560px-5rem)]">
             <p className="inline-flex w-fit items-center gap-2 rounded-2xl border-2 border-yellow-400 bg-black/28 px-4 py-2 text-sm font-black shadow-[0_0_0_1px_rgba(255,255,255,.14)] backdrop-blur">
               <${MapPin} className="h-5 w-5" />
-              Oaxaca, México
+              ${copy.locationLabel}
             </p>
             <h1 className="mt-5 max-w-[12ch] text-5xl font-black leading-[.9] tracking-tight sm:text-6xl lg:text-7xl">
               ${titleParts.map((part, index) => html`<span key=${`${part}-${index}`} className=${index === 1 && lang === 'en' ? 'block text-orange-300' : 'block'}>${part}</span>`)}
@@ -902,15 +730,14 @@ export function Home() {
               </button>
             </div>
           </div>
-          <img src=${localKnowledgeIcon} alt="" aria-hidden="true" className="pointer-events-none absolute right-4 top-4 z-20 w-[14.6484375rem] max-w-[66.25%] origin-top-right scale-125 drop-shadow-[0_18px_28px_rgba(0,0,0,.45)] sm:right-5 sm:top-5 sm:w-[17.08984375rem] lg:right-6 lg:top-6 lg:w-[19.53125rem]" loading="lazy" />
         </div>
       </section>
 
       <section className="home-why-tabs-section overflow-hidden rounded-[1.75rem] border-2 border-orange-200 bg-[#fff2e8] p-5 text-[#321249] shadow-[0_18px_45px_rgba(98,38,132,.12)] sm:p-7 lg:p-8">
         <div className="mb-6 flex items-center justify-center gap-3 text-center sm:gap-5">
-          <span className="text-3xl drop-shadow-sm" aria-hidden="true">😇😁</span>
+          <span className="text-3xl drop-shadow-sm" aria-hidden="true"></span>
           <h2 className="text-3xl font-black leading-none tracking-tight text-[#4c1d95] drop-shadow-[0_3px_0_rgba(255,255,255,.9)] sm:text-4xl lg:text-5xl">${copy.tabsTitle}</h2>
-          <span className="text-3xl drop-shadow-sm" aria-hidden="true">😁😇</span>
+          <span className="text-3xl drop-shadow-sm" aria-hidden="true"></span>
         </div>
         <div className="home-why-tabs-grid grid gap-4 lg:grid-cols-5">
           ${whyTuTourInfo.map(item => { const Icon = item.icon; return html`
@@ -956,48 +783,35 @@ export function Home() {
               ` : null}
               ${activeWhyPopup.key === 'exploreFreely' ? html`
                 <div className="mx-auto max-h-[62vh] max-w-xl space-y-4 overflow-y-auto pr-1 text-[#321249]">
-                  <p className="text-lg font-black uppercase tracking-[0.16em] text-orange-600">${exploreFreelyPopup.title}</p>
                   <p className="text-xl font-black leading-tight text-[#4c1d95] sm:text-2xl">${exploreFreelyPopup.subtitle}</p>
-                  ${exploreFreelyPopup.intro.map(item => html`<p key=${item} className="text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base">${item}</p>`)}
+                  ${exploreFreelyPopup.intro.map((paragraph, index) => html`<p key=${`explore-intro-${index}`} className="text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base">${paragraph}</p>`)}
                   <p className="text-sm font-black leading-7 text-[#321249] sm:text-base">${exploreFreelyPopup.lead}</p>
                   <ul className="grid gap-2 rounded-2xl border-2 border-purple-200 bg-purple-50/80 p-4 text-sm font-black text-[#4c1d95] shadow-[inset_0_0_18px_rgba(255,255,255,.75)] sm:text-base">
                     ${exploreFreelyPopup.bullets.map(item => html`<li key=${item} className="flex items-start gap-2"><span className="mt-1 text-orange-600" aria-hidden="true">✹</span><span>${item}</span></li>`)}
                   </ul>
-                  ${exploreFreelyPopup.closing.map((item, index) => index === exploreFreelyPopup.closing.length - 1
-                    ? html`<p key=${item} className="rounded-2xl bg-[#4c1d95] px-4 py-3 text-base font-black leading-7 text-orange-100 shadow-[0_12px_24px_rgba(76,29,149,.18)] sm:text-lg">${item}</p>`
-                    : html`<p key=${item} className="text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base">${item}</p>`)}
+                  ${exploreFreelyPopup.closing.map((paragraph, index) => html`<p key=${`explore-closing-${index}`} className="text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base">${paragraph}</p>`)}
                 </div>
               ` : null}
               ${activeWhyPopup.key === 'buildMemories' ? html`
                 <div className="mx-auto max-h-[62vh] max-w-xl space-y-4 overflow-y-auto pr-1 text-[#321249]">
-                  <p className="text-lg font-black uppercase tracking-[0.16em] text-orange-600">${buildMemoriesPopup.title}</p>
                   <p className="text-xl font-black leading-tight text-[#4c1d95] sm:text-2xl">${buildMemoriesPopup.subtitle}</p>
-                  ${buildMemoriesPopup.paragraphs.map((item, index) => index >= buildMemoriesPopup.paragraphs.length - 5
-                    ? html`<p key=${item} className=${index === buildMemoriesPopup.paragraphs.length - 1 ? 'rounded-2xl bg-[#4c1d95] px-4 py-3 text-base font-black leading-7 text-orange-100 shadow-[0_12px_24px_rgba(76,29,149,.18)] sm:text-lg' : 'text-sm font-black leading-7 text-[#321249] sm:text-base'}>${item}</p>`
-                    : html`<p key=${item} className="text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base">${item}</p>`)}
+                  ${buildMemoriesPopup.paragraphs.map((paragraph, index) => html`<p key=${`build-memories-${index}`} className="text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base">${paragraph}</p>`)}
                 </div>
               ` : null}
               ${activeWhyPopup.key === 'supportLocalOaxaca' ? html`
                 <div className="mx-auto max-h-[62vh] max-w-xl space-y-4 overflow-y-auto pr-1 text-[#321249]">
-                  <p className="text-lg font-black uppercase tracking-[0.16em] text-orange-600"></p>
                   <p className="text-xl font-black leading-tight text-[#4c1d95] sm:text-2xl">${supportLocalPopup.subtitle}</p>
                   <p className="text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base">${supportLocalPopup.intro}</p>
-                  <ul className="grid gap-2 rounded-2xl border-2 border-orange-200 bg-orange-50/80 p-4 text-sm font-black text-[#4c1d95] shadow-[inset_0_0_18px_rgba(255,255,255,.75)] sm:grid-cols-2 sm:text-base">
+                  <ul className="grid gap-2 rounded-2xl border-2 border-orange-200 bg-orange-50/80 p-4 text-sm font-black text-[#4c1d95] shadow-[inset_0_0_18px_rgba(255,255,255,.75)] sm:text-base">
                     ${supportLocalPopup.bullets.map(item => html`<li key=${item} className="flex items-start gap-2"><span className="mt-1 text-orange-600" aria-hidden="true">✹</span><span>${item}</span></li>`)}
                   </ul>
-                  ${supportLocalPopup.paragraphs.map((item, index) => index === supportLocalPopup.paragraphs.length - 1
-                    ? html`<p key=${item} className="rounded-2xl bg-[#4c1d95] px-4 py-3 text-base font-black leading-7 text-orange-100 shadow-[0_12px_24px_rgba(76,29,149,.18)] sm:text-lg">${item}</p>`
-                    : html`<p key=${item} className=${index === 2 ? 'text-sm font-black leading-7 text-[#321249] sm:text-base' : 'text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base'}>${item}</p>`)}
+                  ${supportLocalPopup.paragraphs.map((paragraph, index) => html`<p key=${`support-local-${index}`} className=${index === supportLocalPopup.paragraphs.length - 1 ? 'rounded-2xl bg-[#4c1d95] px-4 py-3 text-base font-black leading-7 text-orange-100 shadow-[0_12px_24px_rgba(76,29,149,.18)] sm:text-lg' : 'text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base'}>${paragraph}</p>`)}
                 </div>
               ` : null}
               ${activeWhyPopup.key === 'sooooWhyTuTour' ? html`
                 <div className="mx-auto max-h-[62vh] max-w-xl space-y-4 overflow-y-auto pr-1 text-[#321249]">
-                  <p className="text-lg font-black uppercase tracking-[0.16em] text-orange-600"></p>
-                  <p className="text-xl font-black leading-tight text-[#4c1d95] sm:text-2xl">${whyTuTourMissionPopup.title}</p>
-                  <p className="rounded-2xl border-2 border-orange-200 bg-orange-50/80 px-4 py-3 text-base font-black leading-7 text-[#4c1d95] shadow-[inset_0_0_18px_rgba(255,255,255,.75)] sm:text-lg">${whyTuTourMissionPopup.subtitle}</p>
-                  ${whyTuTourMissionPopup.paragraphs.map((item, index) => index === whyTuTourMissionPopup.paragraphs.length - 1
-                    ? html`<p key=${item} className="rounded-2xl bg-[#4c1d95] px-4 py-3 text-base font-black leading-7 text-orange-100 shadow-[0_12px_24px_rgba(76,29,149,.18)] sm:text-lg">${item}</p>`
-                    : html`<p key=${item} className=${index === 1 ? 'text-base font-black leading-7 text-[#321249] sm:text-lg' : 'text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base'}>${item}</p>`)}
+                  <p className="text-xl font-black leading-tight text-[#4c1d95] sm:text-2xl">${whyTuTourMissionPopup.subtitle}</p>
+                  ${whyTuTourMissionPopup.paragraphs.map((paragraph, index) => html`<p key=${`why-tutour-mission-${index}`} className=${index === whyTuTourMissionPopup.paragraphs.length - 1 ? 'rounded-2xl bg-[#4c1d95] px-4 py-3 text-base font-black leading-7 text-orange-100 shadow-[0_12px_24px_rgba(76,29,149,.18)] sm:text-lg' : 'text-sm font-semibold leading-7 text-[#5b2a37] sm:text-base'}>${paragraph}</p>`)}
                 </div>
               ` : null}
             </div>

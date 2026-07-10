@@ -51,7 +51,7 @@ export function Settings() {
       setAuthLoading(false);
     }).catch(() => {
       if (!active) return;
-      setAuthError('Authentication is temporarily unavailable.');
+      setAuthError(t('authTempUnavailable', 'Authentication is temporarily unavailable.'));
       setAuthLoading(false);
     });
     const unsubscribe = auth.onAuthStateChange(user => {
@@ -61,7 +61,7 @@ export function Settings() {
       active = false;
       if (typeof unsubscribe === 'function') unsubscribe();
     };
-  }, []);
+  }, [lang]);
 
   const clearAuthFeedback = () => {
     setAuthError('');
@@ -75,15 +75,15 @@ export function Settings() {
   const handleGoogleLogin = async () => {
     clearAuthFeedback();
     if (!window.genmb || !window.genmb.auth || !window.genmb.auth.signIn) {
-      setAuthError('Google sign-in is not available right now.');
+      setAuthError(t('googleSignInUnavailable', 'Google sign-in is not available right now.'));
       return;
     }
     setGoogleLoading(true);
     try {
       const user = await window.genmb.auth.signIn();
-      if (user) showAuthSuccess(`Signed in as ${user.name || user.email || 'traveler'}.`);
+      if (user) showAuthSuccess(`${t('signedInAs', 'Signed in as')} ${user.name || user.email || t('traveler', 'traveler')}.`);
     } catch (err) {
-      setAuthError(err && err.message ? err.message : 'Sign-in failed.');
+      setAuthError(err && err.message ? err.message : t('signInFailed', 'Sign-in failed.'));
     } finally {
       setGoogleLoading(false);
     }
@@ -93,19 +93,19 @@ export function Settings() {
     event.preventDefault();
     clearAuthFeedback();
     if (!email.trim()) {
-      setAuthError('Enter your email to receive a magic link.');
+      setAuthError(t('enterEmailMagicLink', 'Enter your email to receive a magic link.'));
       return;
     }
     if (!window.genmb || !window.genmb.auth || !window.genmb.auth.sendMagicLink) {
-      setAuthError('Email sign-in is not available right now.');
+      setAuthError(t('emailSignInUnavailable', 'Email sign-in is not available right now.'));
       return;
     }
     setEmailLoading(true);
     try {
       await window.genmb.auth.sendMagicLink(email.trim());
-      showAuthSuccess('Check your email for a sign-in link.');
+      showAuthSuccess(t('checkEmailSignInLink', 'Check your email for a sign-in link.'));
     } catch (err) {
-      setAuthError(err && err.message ? err.message : 'Unable to send magic link.');
+      setAuthError(err && err.message ? err.message : t('unableSendMagicLink', 'Unable to send magic link.'));
     } finally {
       setEmailLoading(false);
     }
@@ -114,15 +114,15 @@ export function Settings() {
   const handleLogout = async () => {
     clearAuthFeedback();
     if (!window.genmb || !window.genmb.auth || !window.genmb.auth.signOut) {
-      setAuthError('Sign out is not available right now.');
+      setAuthError(t('signOutUnavailable', 'Sign out is not available right now.'));
       return;
     }
     setLogoutLoading(true);
     try {
       await window.genmb.auth.signOut();
-      showAuthSuccess('Signed out successfully.');
+      showAuthSuccess(t('signedOutSuccessfully', 'Signed out successfully.'));
     } catch (err) {
-      setAuthError(err && err.message ? err.message : 'Sign out failed.');
+      setAuthError(err && err.message ? err.message : t('signOutFailed', 'Sign out failed.'));
     } finally {
       setLogoutLoading(false);
     }
@@ -196,11 +196,11 @@ export function Settings() {
       </section>
 
       <section className="rounded-[var(--radius-lg)] bg-[hsl(var(--card))] border border-[hsl(var(--border))] p-4 shadow-[var(--shadow-sm)] grid gap-3">
-        <div className="flex items-start gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]"><${UserRound} className="h-5 w-5" /></span><div><h2 className="text-xl font-black">Account</h2><p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">Sign in to sync your travel planning context across supported sessions.</p></div></div>
-        ${authLoading ? html`<p className="rounded-[var(--radius-md)] bg-[hsl(var(--muted))] p-2.5 text-sm font-bold">Loading account…</p>` : null}
+        <div className="flex items-start gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]"><${UserRound} className="h-5 w-5" /></span><div><h2 className="text-xl font-black">${t('account', 'Account')}</h2><p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">${t('accountSyncIntro', 'Sign in to sync your travel planning context across supported sessions.')}</p></div></div>
+        ${authLoading ? html`<p className="rounded-[var(--radius-md)] bg-[hsl(var(--muted))] p-2.5 text-sm font-bold">${t('loadingAccount', 'Loading account…')}</p>` : null}
         ${authError ? html`<p role="alert" className="rounded-[var(--radius-md)] bg-[hsl(var(--destructive)/0.12)] p-2.5 text-sm font-bold text-[hsl(var(--destructive))]">${authError}</p>` : null}
         ${authSuccess ? html`<p className="rounded-[var(--radius-md)] bg-[hsl(var(--secondary)/0.12)] p-2.5 text-sm font-bold text-[hsl(var(--secondary))]">${authSuccess}</p>` : null}
-        ${authUser ? html`<div className="flex flex-wrap items-center gap-3 rounded-[var(--radius-md)] bg-[hsl(var(--muted))] p-3"><div className="grid h-11 w-11 place-items-center overflow-hidden rounded-full bg-[hsl(var(--primary)/0.15)]">${authUser.picture ? html`<img src=${authUser.picture} alt=${authUser.name || authUser.email || 'Traveler'} className="h-full w-full object-cover" referrerPolicy="no-referrer" />` : html`<${CheckCircle2} className="h-5 w-5 text-[hsl(var(--primary))]" />`}</div><div className="min-w-0 flex-1"><p className="truncate text-sm font-black">${authUser.name || 'Traveler'}</p><p className="truncate text-xs text-[hsl(var(--muted-foreground))]">${authUser.email || 'Signed in'}</p></div><button onClick=${handleLogout} disabled=${logoutLoading} className="focus-ring inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-3 text-sm font-black disabled:opacity-60"><${LogOut} className="h-4 w-4" />${logoutLoading ? 'Signing out…' : 'Sign out'}</button></div>` : html`<div className="grid gap-2 sm:grid-cols-[1fr_auto]"><form onSubmit=${handleMagicLink} className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end"><label className="grid gap-1.5"><span className="text-sm font-bold">Email</span><input type="email" value=${email} onInput=${e => setEmail(e.target.value)} placeholder="you@example.com" className=${control} disabled=${emailLoading || googleLoading} /></label><button type="submit" disabled=${emailLoading || googleLoading} className="focus-ring inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-4 text-sm font-black disabled:opacity-60"><${Mail} className="h-4 w-4" />${emailLoading ? 'Sending…' : 'Magic link'}</button></form><button onClick=${handleGoogleLogin} disabled=${googleLoading || emailLoading} className="focus-ring inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[hsl(var(--primary))] px-4 text-sm font-black text-[hsl(var(--primary-foreground))] disabled:opacity-60"><${LogIn} className="h-4 w-4" />${googleLoading ? 'Signing in…' : 'Continue with Google'}</button></div>`}
+        ${authUser ? html`<div className="flex flex-wrap items-center gap-3 rounded-[var(--radius-md)] bg-[hsl(var(--muted))] p-3"><div className="grid h-11 w-11 place-items-center overflow-hidden rounded-full bg-[hsl(var(--primary)/0.15)]">${authUser.picture ? html`<img src=${authUser.picture} alt=${authUser.name || authUser.email || t('traveler', 'Traveler')} className="h-full w-full object-cover" referrerPolicy="no-referrer" />` : html`<${CheckCircle2} className="h-5 w-5 text-[hsl(var(--primary))]" />`}</div><div className="min-w-0 flex-1"><p className="truncate text-sm font-black">${authUser.name || t('traveler', 'Traveler')}</p><p className="truncate text-xs text-[hsl(var(--muted-foreground))]">${authUser.email || t('signedIn', 'Signed in')}</p></div><button onClick=${handleLogout} disabled=${logoutLoading} className="focus-ring inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-3 text-sm font-black disabled:opacity-60"><${LogOut} className="h-4 w-4" />${logoutLoading ? t('signingOut', 'Signing out…') : t('logout')}</button></div>` : html`<div className="grid gap-2 sm:grid-cols-[1fr_auto]"><form onSubmit=${handleMagicLink} className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end"><label className="grid gap-1.5"><span className="text-sm font-bold">${t('email', 'Email')}</span><input type="email" value=${email} onInput=${e => setEmail(e.target.value)} placeholder=${t('emailPlaceholder', 'you@example.com')} className=${control} disabled=${emailLoading || googleLoading} /></label><button type="submit" disabled=${emailLoading || googleLoading} className="focus-ring inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[hsl(var(--border))] px-4 text-sm font-black disabled:opacity-60"><${Mail} className="h-4 w-4" />${emailLoading ? t('sending', 'Sending…') : t('magicLink', 'Magic link')}</button></form><button onClick=${handleGoogleLogin} disabled=${googleLoading || emailLoading} className="focus-ring inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[hsl(var(--primary))] px-4 text-sm font-black text-[hsl(var(--primary-foreground))] disabled:opacity-60"><${LogIn} className="h-4 w-4" />${googleLoading ? t('signingIn', 'Signing in…') : t('continueWithGoogle', 'Continue with Google')}</button></div>`}
       </section>
 
       <section className="grid gap-3 md:grid-cols-2">

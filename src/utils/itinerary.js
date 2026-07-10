@@ -20,8 +20,8 @@ export const isMarketOrInsideMarketItineraryPlace = (place) => {
 export const isSlotAllowedForItineraryPlace = (place, slot) => {
   if (!place) return false;
   if (isMezcalItineraryPlace(place)) return slot === 'afternoon' || (slot === 'night' && isCloseToOaxacaCentro(place));
-  if (itineraryMorningOnlyIds.has(place.id) || place.category === 'nature') return slot === 'morning';
-  if (slot === 'night' && isNightBlockedItineraryPlace(place)) return false;
+  if (itineraryMorningOnlyIds.has(place.id) || ['markets', 'culture', 'nature'].includes(place.category)) return slot === 'morning';
+  if (slot === 'night' && (isNightBlockedItineraryPlace(place) || place.category === 'artisan')) return false;
   if (slot !== 'morning' && (isMarketOrInsideMarketItineraryPlace(place) || isItineraryArchaeologicalSite(place))) return false;
   return true;
 };
@@ -58,7 +58,7 @@ export function generateItinerary(places, options = {}) {
     'parador-turistico-real-matlatl-mezcaleria': { allowed: ['afternoon'], note: ' Parador Turístico Real Matlatl Mezcalería involves alcohol and sits outside Oaxaca Centro, so it is scheduled in the afternoon only. Eat first, confirm current Google Maps hours before leaving, and arrange a sober return driver.' },
     'teatro-macedonio': { allowed: ['morning', 'afternoon', 'night'], note: ' For Teatro Macedonio Alcalá, only use night if there is a confirmed performance or posted opening on Google Maps.' }
   };
-  const removeUnsafeTimeCategories = (cats, slot) => slot === 'morning' ? cats : cats.filter(c => c !== 'markets' && c !== 'nature');
+  const removeUnsafeTimeCategories = (cats, slot) => slot === 'morning' ? cats : cats.filter(c => !['markets', 'culture', 'nature', 'artisan'].includes(c));
   const slots = baseSlots.map((cats, index) => {
     const slot = slotNames[index] || 'morning';
     const combined = preferred ? [...new Set([...cats.filter(c => preferred.includes(c)), ...preferred, ...cats])] : cats;
@@ -104,8 +104,8 @@ export function generateItinerary(places, options = {}) {
   const why = (place, slot) => `Selected for your ${pace} pace, ${budget} budget, ${walking} walking tolerance, ${transport}, and ${style} focus; ${mustSee.includes(place.id) ? 'it is one of your must-see saved places and ' : ''}${place.name} fits the ${slot} with ${place.bestFor}.${timingNote(place, slot)}`;
   return [
     { slot: 'morning', place: pick(inCats(slots[0], 'morning'), 0, 'morning'), note: `Start from ${start}; this plan begins with the shortest practical hop and ${transport}.`, reason: '' },
-    { slot: 'afternoon', place: pick(inCats(slots[1], 'afternoon'), 5, 'afternoon'), note: `Keep the afternoon realistic: hydrate, avoid nature routes, markets, in-market food stands, archaeological sites in late-day heat, cross-valley backtracking, and check last-entry windows. Use ${transport} as needed.`, reason: '' },
-    { slot: 'night', place: pick(inCats(slots[2], 'night'), 11, 'night'), note: `End with an easy return plan: ${transport}, well-lit streets, confirmed current hours on Google Maps, and no nature routes, markets, in-market food stands, archaeological sites, or last-entry garden/artisan workshop stops at night.`, reason: '' }
+    { slot: 'afternoon', place: pick(inCats(slots[1], 'afternoon'), 5, 'afternoon'), note: `Keep the afternoon realistic: hydrate, avoid nature routes, markets, culture stops, in-market food stands, archaeological sites in late-day heat, cross-valley backtracking, and check last-entry windows. Use ${transport} as needed.`, reason: '' },
+    { slot: 'night', place: pick(inCats(slots[2], 'night'), 11, 'night'), note: `End with an easy return plan: ${transport}, well-lit streets, confirmed current hours on Google Maps, and no nature routes, markets, culture stops, artisan stops, in-market food stands, archaeological sites, or last-entry garden/artisan workshop stops at night.`, reason: '' }
   ].map(item => ({ ...item, reason: item.place ? why(item.place, item.slot) : 'No safe, open stop matched this time slot. Adjust your filters or choose a different travel style.' }));
 }
 

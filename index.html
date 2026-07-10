@@ -5,6 +5,14 @@
   <meta name="theme-color" content="#f97316">
   <meta name="description" content="TuTour helps travelers discover Oaxaca places, maps, safety tips, and personalized itineraries.">
   <title>TuTour</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1EZS6LNB16"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = window.gtag || gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-1EZS6LNB16', { send_page_view: false });
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./styles/main.css">
   <link rel="stylesheet" href="./styles/logo-fix.css">
@@ -12,14 +20,9 @@
   <link rel="stylesheet" href="./styles/home-tabs-compact.css">
   <!-- GenMB Visual Edit START -->
 <style data-genmb-visual-edit>
-body > div:nth-of-type(1) > div:nth-of-type(1) > header:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(1) > img:nth-of-type(1) {
-  padding: 0.30px !important;
-}
-</style>
-<style data-genmb-visual-edit>
-body > div:nth-of-type(1) > div:nth-of-type(1) > header:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(1) > img:nth-of-type(1) {
-  padding: 0.30px !important;
-}
+body > div:nth-of-type(1) > div:nth-of-type(1) > header:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(1) > img:nth-of-type(1) { padding: 0.30px !important; }
+body > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > p:nth-of-type(1) { color: #ce4af2 !important; }
+body > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > strong:nth-of-type(1) { color: #ff8605 !important; }
 </style>
 <!-- GenMB Visual Edit END -->
     <!-- GenMB Capabilities START -->
@@ -836,6 +839,95 @@ window.genmb.chatbot = new GenMBAIChatbot(config);
 })();
 </script>
     <script>
+// GenMB contact-form SDK (Capability)
+(function() {
+/**
+ * GenMB Contact Form SDK (Connector)
+ * Submit contact form messages that get emailed to the app owner.
+ * Build your own contact form UI.
+ *
+ * Available at window.genmb.contactForm:
+ *   window.genmb.contactForm.submit({ name, email, subject?, message })
+ */
+
+class GenMBContactForm {
+  constructor(config) {
+    if (!config.appId) {
+      throw new Error('GenMBContactForm: appId is required')
+    }
+    this.appId = config.appId
+    this.baseUrl = (config.baseUrl || '').replace(/\/$/, '')
+  }
+
+  /**
+   * Submit a contact form message. Emails are sent to the app owner.
+   * @param {Object} data
+   * @param {string} data.name - Sender name (1-200 chars, required)
+   * @param {string} data.email - Sender email (valid email, required)
+   * @param {string} [data.subject] - Subject line (0-500 chars, optional)
+   * @param {string} data.message - Message body (1-5000 chars, required)
+   * @returns {Promise<{ success: boolean }>}
+   */
+  async submit(data) {
+    if (!data || !data.name || !data.email || !data.message) {
+      throw new Error('Missing required fields: name, email, message')
+    }
+
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(data.email)) {
+      throw new Error('Invalid email address')
+    }
+
+    var controller = new AbortController()
+    var timer = setTimeout(function () { controller.abort() }, 30000)
+
+    var res
+    try {
+      res = await fetch(this.baseUrl + '/api/contact/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          appId: this.appId,
+          name: data.name.trim(),
+          email: data.email.trim(),
+          subject: (data.subject || '').trim(),
+          message: data.message.trim()
+        }),
+        signal: controller.signal
+      })
+    } catch (err) {
+      clearTimeout(timer)
+      if (err.name === 'AbortError') throw new Error('Request timed out')
+      throw err
+    }
+    clearTimeout(timer)
+
+    var json = await res.json()
+
+    if (!res.ok || !json.success) {
+      throw new Error(json.error || 'Failed to submit contact form')
+    }
+
+    return { success: true }
+  }
+
+  // Backward-compat stubs (old widget API — no-op)
+  open() {}
+  close() {}
+  toggle() {}
+  setTheme() {}
+}
+
+
+// Auto-initialize
+window.genmb = window.genmb || {};
+const config = {
+  "appId": "romcWH54d4SR"
+};
+window.genmb.contactForm = new GenMBContactForm(config);
+})();
+</script>
+    <script>
 // GenMB kv SDK (Capability)
 (function() {
 /**
@@ -997,95 +1089,6 @@ window.genmb.kv = new GenMBKeyValueStore(config);
 })();
 </script>
     <script>
-// GenMB contact-form SDK (Capability)
-(function() {
-/**
- * GenMB Contact Form SDK (Connector)
- * Submit contact form messages that get emailed to the app owner.
- * Build your own contact form UI.
- *
- * Available at window.genmb.contactForm:
- *   window.genmb.contactForm.submit({ name, email, subject?, message })
- */
-
-class GenMBContactForm {
-  constructor(config) {
-    if (!config.appId) {
-      throw new Error('GenMBContactForm: appId is required')
-    }
-    this.appId = config.appId
-    this.baseUrl = (config.baseUrl || '').replace(/\/$/, '')
-  }
-
-  /**
-   * Submit a contact form message. Emails are sent to the app owner.
-   * @param {Object} data
-   * @param {string} data.name - Sender name (1-200 chars, required)
-   * @param {string} data.email - Sender email (valid email, required)
-   * @param {string} [data.subject] - Subject line (0-500 chars, optional)
-   * @param {string} data.message - Message body (1-5000 chars, required)
-   * @returns {Promise<{ success: boolean }>}
-   */
-  async submit(data) {
-    if (!data || !data.name || !data.email || !data.message) {
-      throw new Error('Missing required fields: name, email, message')
-    }
-
-    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(data.email)) {
-      throw new Error('Invalid email address')
-    }
-
-    var controller = new AbortController()
-    var timer = setTimeout(function () { controller.abort() }, 30000)
-
-    var res
-    try {
-      res = await fetch(this.baseUrl + '/api/contact/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          appId: this.appId,
-          name: data.name.trim(),
-          email: data.email.trim(),
-          subject: (data.subject || '').trim(),
-          message: data.message.trim()
-        }),
-        signal: controller.signal
-      })
-    } catch (err) {
-      clearTimeout(timer)
-      if (err.name === 'AbortError') throw new Error('Request timed out')
-      throw err
-    }
-    clearTimeout(timer)
-
-    var json = await res.json()
-
-    if (!res.ok || !json.success) {
-      throw new Error(json.error || 'Failed to submit contact form')
-    }
-
-    return { success: true }
-  }
-
-  // Backward-compat stubs (old widget API — no-op)
-  open() {}
-  close() {}
-  toggle() {}
-  setTheme() {}
-}
-
-
-// Auto-initialize
-window.genmb = window.genmb || {};
-const config = {
-  "appId": "romcWH54d4SR"
-};
-window.genmb.contactForm = new GenMBContactForm(config);
-})();
-</script>
-    <script>
 // GenMB relational-db SDK (Capability)
 (function() {
 /**
@@ -1142,6 +1145,29 @@ class GenMBDataClient {
         return target._table(prop)
       }
     })
+  }
+
+  /**
+   * Apply an ordered list of writes atomically (all-or-nothing). Use for
+   * multi-step mutations that must not partially apply - e.g. a balance
+   * transfer (debit one row, credit another) or an order that decrements
+   * stock and inserts a line item. If any operation fails the whole batch
+   * rolls back and nothing is written.
+   *
+   *   await db.transaction([
+   *     { op: 'update', table: 'accounts', id: a, fields: { balance: 90 } },
+   *     { op: 'update', table: 'accounts', id: b, fields: { balance: 110 } },
+   *     { op: 'create', table: 'ledger', fields: { from: a, to: b, amount: 10 } },
+   *   ])
+   *
+   * @param {Array<{op:'create'|'update'|'delete', table:string, id?:string, fields?:object}>} operations
+   * @returns {Promise<{results: Array, count: number}>}
+   */
+  transaction(operations) {
+    if (!Array.isArray(operations) || !operations.length) {
+      throw new Error('transaction() requires a non-empty array of operations')
+    }
+    return this._request('POST', this._base + '/transaction', { operations: operations })
   }
 
   _table(name) {
@@ -1503,75 +1529,6 @@ const config = {
 };
 window.genmb.maps = new GenMBMaps(config);
 window.genmb.maps.ready();
-})();
-</script>
-    <script>
-// GenMB audit-log SDK (Capability)
-(function() {
-/**
- * GenMB Audit Log SDK - window.genmb.audit
- *
- * Append-only audit trail. Fire-and-forget log() from the success path of
- * any sensitive action; list() for the admin view.
- */
-class GenMBAudit {
-  constructor({ appId, baseUrl } = {}) {
-    if (!appId) throw new Error('GenMBAudit: appId is required')
-    this.appId = appId
-    this.baseUrl = ((baseUrl || '/api/audit').replace(/\/$/, '')) + '/' + appId
-  }
-
-  async ready() { return this }
-
-  async log(action, entityType, entityId, meta) {
-    if (!action) throw new Error('audit.log requires action')
-    return this._json('POST', '/log', {
-      action,
-      entityType: entityType || null,
-      entityId: entityId || null,
-      meta: meta || null,
-    })
-  }
-
-  async list({ entityType, entityId, action, userId, limit, before } = {}) {
-    const params = []
-    if (entityType) params.push('entityType=' + encodeURIComponent(entityType))
-    if (entityId) params.push('entityId=' + encodeURIComponent(entityId))
-    if (action) params.push('action=' + encodeURIComponent(action))
-    if (userId) params.push('userId=' + encodeURIComponent(userId))
-    if (limit) params.push('limit=' + limit)
-    if (before) params.push('before=' + encodeURIComponent(before))
-    const qs = params.length ? '?' + params.join('&') : ''
-    return this._json('GET', '/list' + qs)
-  }
-
-  async _json(method, path, body) {
-    const init = { method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' }
-    if (body !== undefined) init.body = JSON.stringify(body)
-    const res = await fetch(this.baseUrl + path, init)
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const e = new Error(err.error || `audit ${path} failed (${res.status})`)
-      e.code = err.code || `HTTP_${res.status}`
-      e.status = res.status
-      throw e
-    }
-    const json = await res.json()
-    return json.data !== undefined ? json.data : json
-  }
-}
-
-window.GenMBAudit = GenMBAudit
-
-
-// Auto-initialize
-window.genmb = window.genmb || {};
-const config = {
-  "appId": "romcWH54d4SR",
-  "baseUrl": "/api/audit"
-};
-window.genmb.audit = new GenMBAudit(config);
-window.genmb.audit.ready();
 })();
 </script>
     <!-- GenMB Capabilities END -->
